@@ -172,14 +172,16 @@ reclass.tbl_metric <- function(x, result) {
 
 reclass.tbl_metric_group <- reclass.tbl_metric
 
-#' @rdname metric-s3
+
 #' @importFrom dplyr filter
+#' @export
+dplyr::filter
+
+#' @rdname metric-s3
 #' @export
 filter.tbl_metric <- function(.data, ...) {
   reclass(.data, NextMethod())
 }
-
-registerS3method("filter", "tbl_metric", filter.tbl_metric)
 
 #' @rdname metric-s3
 #' @export
