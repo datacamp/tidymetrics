@@ -1,0 +1,33 @@
+---
+name: metrics_nycflight_stats
+owner: "David Robinson"
+metrics:
+  nb_flights:
+    title: Number of Flights
+    description: Total number of flights
+  avg_arr_delay:
+    title: Average Arrival Delay
+    description: Average arrival delay. Note that some data may be missing their average delay.
+dimensions:
+  origin:
+    title: Origin
+    description: "Origin airport: JFK, EWR, or LGA."
+  carrier:
+    title: Carrier
+    description: Airline carrier (two-letter code).
+---
+
+Example metric Rmd used for unit tests.
+
+```{r}
+library(dplyr)
+library(nycflights13)
+
+# find flight delays by week, month, and quarter
+flight_summary <- flights %>%
+  mutate(date = as.Date(ISOdate(year, month, day))) %>%
+  cross_by_dimensions(origin, carrier) %>%
+  cross_by_periods() %>%
+  summarize(nb_flights = n(),
+            avg_arr_delay = mean(arr_delay, na.rm = TRUE))
+```
