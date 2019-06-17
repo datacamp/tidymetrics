@@ -2,7 +2,7 @@
 % Please edit documentation in R/create-metrics.R
 \name{create_metrics}
 \alias{create_metrics}
-\title{Given a metric dataset and an Rmd file, turn into a named list of metric objects}
+\title{Given a metric tbl and an Rmd file, turn into a named list of metric objects}
 \usage{
 create_metrics(..., rmd_file = NULL)
 }
@@ -18,7 +18,7 @@ A named list of metric objects. Each of these has both the data and the metadata
 (documentation, dimensions, owner, etc) to make an interactive visualization.
 }
 \description{
-Given a metric dataset and an Rmd file, turn into a named list of metric objects
+Given a metric tbl and an Rmd file, turn into a named list of metric objects
 }
 \examples{
 
