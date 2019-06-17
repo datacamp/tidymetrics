@@ -1,0 +1,33 @@
+Package: tidymetrics
+Type: Package
+Title: A Tidy Approach to Dimensional Modeling
+Version: 0.0.1
+Authors@R: c(person("Ramnath", "Vaidyanathan", email = "ramnath.vaidya@gmail.com", role = c("cre", "aut")),
+             person("David", "Robinson", email = "admiral.david@gmail.com", role = "aut"))
+Maintainer: Ramnath Vaidyanathan <ramnath.vaidya@gmail.com>
+Description: Offers tools for aggregating data while segmenting by time, periods,
+    and dimensions, while allowing documentation and metadata to be associated with it. 
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    dplyr,
+    stringr,
+    tidyr,
+    pillar,
+    lubridate,
+    magrittr,
+    rlang,
+    yaml,
+    tibble,
+    rmarkdown,
+    assertthat,
+    forcats,
+    glue,
+    purrr,
+    rstudioapi
+RoxygenNote: 6.1.1
+Suggests: 
+    ggplot2,
+    testthat,
+    nycflights13
