@@ -9,7 +9,7 @@
 #' @param quietly If FALSE (default), display a message about what columns are
 #' being discarded.
 #'
-#' @seealso \code{\link{discard_dimensions}}
+#' @seealso \code{\link{keep_dimensions}}
 #'
 #' @export
 #' @examples
