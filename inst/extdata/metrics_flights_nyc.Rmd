@@ -1,5 +1,5 @@
 ---
-name: metrics_nycflight_stats
+name: metrics_flights_nyc
 owner: "David Robinson"
 metrics:
   nb_flights:

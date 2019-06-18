@@ -9,9 +9,9 @@ flight_summary <- flights %>%
   summarize(nb_flights = n(),
             avg_arr_delay = mean(arr_delay, na.rm = TRUE))
 
-rmd <- system.file("extdata", "metrics_nycflight_stats.Rmd", package = "tidymetrics")
-nycflight_metrics <- create_metrics(flight_summary, rmd_file = rmd)
+rmd <- system.file("extdata", "metrics_flights_nyc.Rmd", package = "tidymetrics")
+flights_nyc <- create_metrics(flight_summary, rmd_file = rmd)
 
-flight_avg_arr_delay <- nycflight_metrics$nycflight_stats_avg_arr_delay
+flights_nyc_avg_arr_delay <- nycflight_metrics$flights_nyc_avg_arr_delay
 
-usethis::use_data(flight_avg_arr_delay, overwrite = TRUE)
+usethis::use_data(flights_nyc_avg_arr_delay, overwrite = TRUE)

@@ -14,4 +14,4 @@
 #'   \item{Average arrival delay of a flight in this period}
 #' }
 #' @source \url{https://cran.r-project.org/package=nycflights13}
-"flight_avg_arr_delay"
+"flights_nyc_avg_arr_delay"

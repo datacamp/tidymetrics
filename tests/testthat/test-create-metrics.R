@@ -17,7 +17,7 @@ test_that("Can create metrics based on an Rmd, and operate on them", {
     summarize(nb_flights = n(),
               avg_arr_delay = mean(arr_delay, na.rm = TRUE))
 
-  rmd <- system.file("extdata", "metrics_nycflight_stats.Rmd", package = "tidymetrics")
+  rmd <- system.file("extdata", "metrics_flights_nyc.Rmd", package = "tidymetrics")
   metrics <- create_metrics(flight_summary, rmd_file = rmd)
 
   expect_equal(length(metrics), 2)
