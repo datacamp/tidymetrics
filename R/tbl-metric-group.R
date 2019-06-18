@@ -11,7 +11,7 @@
 #' @export
 #' @rdname metric_group
 create_metric_group <- function(tbl, group_name = NULL, rmd_file = NULL){
-  metric_details <- get_metric_docs(rmd_file = NULL)
+  metric_details <- get_metric_docs(rmd_file = rmd_file)
   if (is.null(group_name)){
     group_name <- names(metric_details)[1] %>%
       stringr::str_split("_") %>%
