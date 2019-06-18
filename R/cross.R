@@ -4,7 +4,7 @@
 #'
 #' @param x,y tbls to join
 #' @param ... additional arguments to be passed on to
-#'   \code{\link[dplyr]{full_join}}
+#'   \code{\link[dplyr]{full_join}} or \code{\link[tidyr]{crossing}}
 #' @export
 #' @examples
 #' d1 <- dplyr::tibble(x = 1:3)
@@ -21,7 +21,6 @@ cross_join.tbl_sql <- function(x, y, ...){
 
 #' @export
 cross_join.data.frame <- function(x, y, ...){
-  x %>%
-    tidyr::crossing()
+  tidyr::crossing(x, y, ...)
 }
 
