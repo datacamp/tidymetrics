@@ -203,3 +203,45 @@ var_names_dimensions <- function(tbl) {
 var_names_not_dimensions <- function(tbl){
   setdiff(colnames(tbl), var_names_dimensions(tbl))
 }
+
+
+#' Remove dimensions with a constant level (single value)
+#'
+#' Use \code{remove_constant_dimensions} instead of \code{select} so the
+#' removed dimension value is added to the metadata attribute.
+#'
+#' @export
+#' @param tbl A metric tbl in wide format, with one or more dimensions.
+#' @param quietly If FALSE (default), display a message about what columns are
+#'   being discarded.
+#' @importFrom purrr map keep
+#' @examples
+#' library(dplyr)
+#' flights_nyc_avg_arr_delay %>%
+#'   filter(origin == 'JFK') %>%
+#'   remove_constant_dimensions()
+remove_constant_dimensions <- function(tbl, quietly = FALSE){
+  dims <- var_names_dimensions(tbl)
+  dims_to_remove <- tbl[dims] %>%
+    purrr::map(n_distinct) %>%
+    purrr::keep(~ .x == 1) %>%
+    names()
+  if (length(dims_to_remove) >= 1){
+    if (!quietly){
+      message("Removing dimensions ", paste(dims_to_remove, collapse = " , "))
+    }
+    d <- tbl %>%
+      select(-one_of(!!!dims_to_remove))
+    filters <- attr(d, 'metadata')$dimensions_filters
+    attr(d, 'metadata')$dimensions_filters <- append(filters,
+      tbl %>%
+        as_tibble() %>%
+        select(!!!dims_to_remove) %>%
+        purrr::map_chr(unique) %>%
+        as.list()
+    )
+    return(d)
+  } else {
+    tbl
+  }
+}
