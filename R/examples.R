@@ -11,7 +11,7 @@
 #'   \item{carrier}{Two-letter airline code}
 #'   \item{period}{Either week, month, or quarter}
 #'   \item{date}{Date}
-#'   \item{Average arrival delay of a flight in this period}
+#'   \item{value}{Average arrival delay of a flight in this period}
 #' }
 #' @source \url{https://cran.r-project.org/package=nycflights13}
 "flights_nyc_avg_arr_delay"
