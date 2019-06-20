@@ -207,7 +207,7 @@ var_names_not_dimensions <- function(tbl){
 
 #' Remove dimensions with a constant level (single value)
 #'
-#' Use \code{remove_constant_dimensions} instead of \code{select} so the
+#' Use \code{constant_constant_dimensions} instead of \code{select} so the
 #' removed dimension value is added to the metadata attribute.
 #'
 #' @export
@@ -216,11 +216,13 @@ var_names_not_dimensions <- function(tbl){
 #'   being discarded.
 #' @importFrom purrr map keep
 #' @examples
+#'
 #' library(dplyr)
+#'
 #' flights_nyc_avg_arr_delay %>%
 #'   filter(origin == 'JFK') %>%
-#'   remove_constant_dimensions()
-remove_constant_dimensions <- function(tbl, quietly = FALSE){
+#'   discard_constant_dimensions()
+discard_constant_dimensions <- function(tbl, quietly = FALSE){
   dims <- var_names_dimensions(tbl)
   dims_to_remove <- tbl[dims] %>%
     purrr::map(n_distinct) %>%
