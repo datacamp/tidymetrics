@@ -154,6 +154,7 @@ as_tibble.tbl_metric <- function(x) {
 #' Copy class and attributes from the original version of an object to a modified version.
 #'
 #' Copied over from https://github.com/tidyverse/dplyr/issues/719
+#' @export
 #' @param x The original object, which has a class/attributes to copy
 #' @param result The modified object, which is / might be missing the
 #'   class/attributes.
@@ -163,6 +164,7 @@ reclass <- function(x, result) {
   UseMethod('reclass')
 }
 
+#' @export
 reclass.tbl_metric <- function(x, result) {
   class(result) <- unique(c(class(x)[[1]], class(result)))
   attr(result, class(x)[[1]]) <- attr(x, class(x)[[1]])
@@ -170,6 +172,7 @@ reclass.tbl_metric <- function(x, result) {
   result
 }
 
+#' @export
 reclass.tbl_metric_group <- reclass.tbl_metric
 
 
