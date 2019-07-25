@@ -67,9 +67,6 @@ cross_by_periods.tbl_lazy <-  function(tbl,
     filter(
       (period %in% all_periods) |
       (intervals && (period %LIKE% "%All%" || period %LIKE% "%Last%"))
-    ) %>%
-    filter(
-      period %LIKE% "%All%" || period %LIKE% "%Last%" || date < !!Sys.Date()
     )
 
   ## TODO: check that the periods and dates match what's available in the table
@@ -77,6 +74,9 @@ cross_by_periods.tbl_lazy <-  function(tbl,
   tbl %>%
     rename(date_original = date) %>%
     inner_join(remote_periods, by = "date_original") %>%
+    filter(
+      period %LIKE% "%All%" || period %LIKE% "%Last%" || date < !!Sys.Date()
+    ) %>%
     group_by(period, date, add = TRUE)
 }
 
