@@ -64,8 +64,10 @@ cross_by_periods.tbl_lazy <-  function(tbl,
   all_periods <- c(periods, paste0("rolling_", windows, "d"))
 
   remote_periods <- remote_date_periods %>%
-    filter(period %in% all_periods |
-             (intervals && (period %LIKE% "All" || period %LIKE% "Last")))
+    filter(
+      (period %in% all_periods) |
+      (intervals && (period %LIKE% "%All%" || period %LIKE% "%Last%"))
+    )
 
   ## TODO: check that the periods and dates match what's available in the table
 
