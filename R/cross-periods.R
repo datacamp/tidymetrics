@@ -83,6 +83,8 @@ cross_by_periods.tbl_lazy <-  function(tbl,
 }
 
 clip_incomplete_rolling_periods <- function(tbl){
+  # We need to remove incomplete rolling periods at both ends
+  # since they could be misleading.
   date_range <- tbl %>%
     ungroup() %>%
     summarize(
@@ -93,9 +95,6 @@ clip_incomplete_rolling_periods <- function(tbl){
 
   date_thresholds <- date_range$min + c(7, 28, 56)
   tbl %>%
-    # filter(!(
-    #   (period %LIKE% "rolling%") & (date > !!date_range$max)
-    # )) %>%
     mutate(include = case_when(
       period == 'rolling_7d'  ~ date >= !!date_thresholds[1] & date <= !!date_range$max,
       period == 'rolling_28d' ~ date >= !!date_thresholds[2] & date <= !!date_range$max,
