@@ -51,7 +51,11 @@ cross_by_periods.tbl_lazy <-  function(tbl,
                                        remote_date_periods = NULL,
                                        ...) {
   check_cross_by_tbl(tbl)
-
+  # If user provides a vector of intervals, set intervals to TRUE
+  # This is required for backward compatibility with the previous version.
+  if (!is.logical(intervals) && length(intervals) > 0){
+    intervals <- TRUE
+  }
   if (is.null(remote_date_periods)) {
     opt <- getOption("remote_date_periods")
     if (is.null(opt)) {
@@ -74,7 +78,31 @@ cross_by_periods.tbl_lazy <-  function(tbl,
   tbl %>%
     rename(date_original = date) %>%
     inner_join(remote_periods, by = "date_original") %>%
+    clip_incomplete_rolling_periods() %>%
     group_by(period, date, add = TRUE)
+}
+
+clip_incomplete_rolling_periods <- function(tbl){
+  # We need to remove incomplete rolling periods at both ends
+  # since they could be misleading.
+  date_range <- tbl %>%
+    ungroup() %>%
+    summarize(
+      min = min(date_original, na.rm = TRUE),
+      max = max(date_original, na.rm = TRUE)
+    ) %>%
+    collect()
+
+  date_thresholds <- date_range$min + c(7, 28, 56)
+  tbl %>%
+    mutate(include = case_when(
+      period == 'rolling_7d'  ~ date >= !!date_thresholds[1] & date <= !!date_range$max,
+      period == 'rolling_28d' ~ date >= !!date_thresholds[2] & date <= !!date_range$max,
+      period == 'rolling_56d' ~ date >= !!date_thresholds[3] & date <= !!date_range$max,
+      TRUE ~ TRUE
+    )) %>%
+    filter(include) %>%
+    select(-include)
 }
 
 #' @rdname cross_by_periods
@@ -84,6 +112,9 @@ cross_by_periods.tbl_df <-  function(tbl,
                                      windows = c(),
                                      intervals = FALSE,
                                      ...) {
+  ## TODO:
+  ## 1. Update the in-memory version of cross-by-periods to
+  ##    follow the same logic as the remote version (clipping, intervals)
   check_cross_by_tbl(tbl)
 
   date_periods <- generate_date_periods(min(tbl$date),
