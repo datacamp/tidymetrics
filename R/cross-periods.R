@@ -78,25 +78,28 @@ cross_by_periods.tbl_lazy <-  function(tbl,
   tbl %>%
     rename(date_original = date) %>%
     inner_join(remote_periods, by = "date_original") %>%
-    filter(!(period %LIKE% "rolling%" & date >= !!Sys.Date())) %>%
     clip_incomplete_rolling_periods() %>%
     group_by(period, date, add = TRUE)
 }
 
 clip_incomplete_rolling_periods <- function(tbl){
-  date_min <- tbl %>%
+  date_range <- tbl %>%
     ungroup() %>%
     summarize(
-      date_min = min(date_original, na.rm = TRUE)
+      min = min(date_original, na.rm = TRUE),
+      max = max(date_original, na.rm = TRUE)
     ) %>%
-    pull(date_min)
+    collect()
 
-  date_thresholds <- date_min + c(7, 28, 56)
+  date_thresholds <- date_range$min + c(7, 28, 56)
   tbl %>%
+    # filter(!(
+    #   (period %LIKE% "rolling%") & (date > !!date_range$max)
+    # )) %>%
     mutate(include = case_when(
-      period == 'rolling_7d'  ~ date >= !!date_thresholds[1],
-      period == 'rolling_28d' ~ date >= !!date_thresholds[2],
-      period == 'rolling_56d' ~ date >= !!date_thresholds[2],
+      period == 'rolling_7d'  ~ date >= !!date_thresholds[1] & date <= !!date_range$max,
+      period == 'rolling_28d' ~ date >= !!date_thresholds[2] & date <= !!date_range$max,
+      period == 'rolling_56d' ~ date >= !!date_thresholds[3] & date <= !!date_range$max,
       TRUE ~ TRUE
     )) %>%
     filter(include) %>%
