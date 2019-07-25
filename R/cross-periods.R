@@ -51,6 +51,9 @@ cross_by_periods.tbl_lazy <-  function(tbl,
                                        remote_date_periods = NULL,
                                        ...) {
   check_cross_by_tbl(tbl)
+  gvars <- group_vars(tbl)
+  tbl <- tbl %>%
+    ungroup()
   # If user provides a vector of intervals, set intervals to TRUE
   # This is required for backward compatibility with the previous version.
   if (!is.logical(intervals) && length(intervals) > 0){
@@ -79,7 +82,7 @@ cross_by_periods.tbl_lazy <-  function(tbl,
     rename(date_original = date) %>%
     inner_join(remote_periods, by = "date_original") %>%
     clip_incomplete_rolling_periods() %>%
-    group_by(period, date, add = TRUE)
+    group_by_at(c("period", "date", gvars))
 }
 
 clip_incomplete_rolling_periods <- function(tbl){
