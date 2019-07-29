@@ -26,6 +26,24 @@ test_that("can cross a local table by calendar periods", {
 })
 
 
+test_that("can cross a postgres table by calendar periods", {
+  p <- c("day", "week", "month", "quarter", "year")
+
+  crossed <- tbl_small_flights %>%
+    cross_by_periods(periods = p) %>%
+    collect()
+
+  expect_equal(group_vars(crossed), c("period", "date"))
+  expect_true(all(c("period", "date", "date_original", "carrier") %in% colnames(crossed)))
+
+  # has all the periods
+  expect_equal(sort(unique(crossed$period)), sort(p))
+
+  expect_equal(min(crossed$date), as.Date(floor_date(as.Date("2013-01-01"), "week")))
+  expect_equal(max(crossed$date), as.Date("2013-02-28"))
+})
+
+
 test_that("can cross a local table by windows", {
   w <- c(7, 14)
 
