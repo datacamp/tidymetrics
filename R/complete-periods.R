@@ -58,7 +58,7 @@ complete_periods <- function(metric, periods = c("month")) {
     tidyr::crossing(period = periods) %>%
     dplyr::group_by(period) %>%
     dplyr::filter(date == as.Date(lubridate::ceiling_date(date, period[1])) - 1) %>%
-    dplyr::mutate(date = as.Date(lubridate::floor_date(date, period[1]))) %>%
+    dplyr::mutate(date = as.Date(lubridate::floor_date(date, period[1], week_start = 1))) %>%
     dplyr::ungroup()
 
   bind_rows(metric, new_periods)
