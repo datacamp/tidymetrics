@@ -39,7 +39,7 @@ test_that("can cross a postgres table by calendar periods", {
   # has all the periods
   expect_equal(sort(unique(crossed$period)), sort(p))
 
-  expect_equal(min(crossed$date), as.Date(floor_date(as.Date("2013-01-01"), "week")))
+  expect_equal(min(crossed$date), as.Date(floor_date(as.Date("2013-01-01"), "week", week_start = 1)))
   expect_equal(max(crossed$date), as.Date("2013-02-28"))
 })
 
