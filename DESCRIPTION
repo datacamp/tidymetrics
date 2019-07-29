@@ -34,4 +34,5 @@ Suggests:
     nycflights13,
     covr,
     dbplyr,
-    RPostgreSQL
+    RPostgreSQL,
+    DBI
