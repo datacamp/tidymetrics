@@ -24,7 +24,9 @@ generate_date_periods <- function(start,
     calendar_periods <- dates_original %>%
       tidyr::crossing(period = periods) %>%
       dplyr::group_by(period) %>%
-      dplyr::mutate(date = lubridate::floor_date(date_original, period[1])) %>%
+      dplyr::mutate(
+        date = lubridate::floor_date(date_original, period[1], week_start = 1)
+      ) %>%
       dplyr::ungroup() %>%
       dplyr::select(period, date, date_original)
 
