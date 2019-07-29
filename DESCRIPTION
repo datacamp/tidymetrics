@@ -33,4 +33,5 @@ Suggests:
     testthat,
     nycflights13,
     covr,
-    dbplyr
+    dbplyr,
+    RPostgreSQL
