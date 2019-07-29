@@ -32,4 +32,5 @@ Suggests:
     ggplot2,
     testthat,
     nycflights13,
-    covr
+    covr,
+    dbplyr
