@@ -3,5 +3,7 @@
 language: R
 sudo: false
 cache: packages
+services:
+  - postgresql
 after_success:
   - Rscript -e 'covr::codecov()'
