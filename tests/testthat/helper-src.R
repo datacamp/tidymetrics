@@ -3,13 +3,18 @@ library(tidyr)
 library(dplyr)
 
 PORT <- if (identical(Sys.getenv("TRAVIS"), "true")) 5432 else 5433
+USER <- if (identical(Sys.getenv("TRAVIS"), "true")) {
+  'postgres'
+} else {
+  Sys.info()[['user']]
+}
 
 
 # Connect to DB and add small_flights data ----
 
 dbcon <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
       dbname = "postgres",
-      user = "postgres",
+      user = USER,
       password = "",
       host = "localhost",
       port = PORT
