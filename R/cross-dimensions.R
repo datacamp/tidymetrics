@@ -10,6 +10,9 @@
 #' @param ... A selection of columns
 #' @param add Whether to leave the existing groups as well instead of replacing
 #' them (by default, yes).
+#' @param max_dimensions The number of (non-All) dimensions that each row
+#' can have. This reduces the size of a metrics table, by limiting the number
+#' of dimensions that can be anything besides All at the same time.
 #'
 #' @importFrom rlang :=
 #'
@@ -34,6 +37,13 @@
 #'
 #' flight_summary
 #'
+#' flight_summary <- nycflights13::flights %>%
+#'   cross_by_dimensions(carrier, origin, max_dimensions = 1) %>%
+#'   summarize(nb_flights = n(),
+#'             avg_arr_delay = mean(arr_delay, na.rm = TRUE))
+#'
+#' flight_summary
+#'
 #' # This works well when combined with discard_dimensions, which filters for
 #' # an All level and removes the column
 #'
@@ -45,20 +55,30 @@
 #'   discard_dimensions(carrier)
 #'
 #' @export
-cross_by_dimensions <- function(tbl, ..., add = TRUE){
+cross_by_dimensions <- function(tbl, ..., add = TRUE, max_dimensions = NULL){
   g_vars <- dplyr::group_vars(tbl)
   tbl <- tbl %>%
-    ungroup()
+    ungroup() %>%
+    mutate(nb_all = 0)
   columns <- ensyms(...)
   for (column in columns) {
     tbl_1 <- tbl %>%
       mutate(!!column := as.character(!! column))
     tbl <- tbl %>%
       mutate(!!column := 'All') %>%
+      mutate(nb_all = nb_all + 1) %>%
       union_all(tbl_1)
   }
 
+  if (!is.null(max_dimensions)){
+    nb_all_max <- rlang::dots_n(...) - max_dimensions
+    tbl <- tbl %>%
+      filter(nb_all >= nb_all_max)
+  }
+
   tbl %>%
+    select(-nb_all) %>%
     group_by_at(vars(g_vars)) %>%
     group_by(!!!columns, add = add)
+
 }
