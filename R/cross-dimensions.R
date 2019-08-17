@@ -56,29 +56,50 @@
 #'
 #' @export
 cross_by_dimensions <- function(tbl, ..., add = TRUE, max_dimensions = NULL){
+  if (!is.null(max_dimensions) && max_dimensions == 1){
+    tbl %>%
+      cross_by_dimensions_one(..., add = add)
+  } else {
+    g_vars <- dplyr::group_vars(tbl)
+    columns <- ensyms(...)
+    tbl <- tbl %>%
+      ungroup() %>%
+      mutate_at(vars(!!!columns), as.character) %>%
+      mutate(nb_all = 0)
+
+    for (column in columns) {
+      tbl <- tbl %>%
+        mutate(!!column := 'All') %>%
+        mutate(nb_all = nb_all + 1) %>%
+        union_all(tbl)
+    }
+
+    if (!is.null(max_dimensions)){
+      nb_all_max <- rlang::dots_n(...) - max_dimensions
+      tbl <- tbl %>%
+        filter(nb_all >= nb_all_max)
+    }
+
+    tbl %>%
+      select(-nb_all) %>%
+      group_by_at(vars(g_vars)) %>%
+      group_by(!!!columns, add = add)
+  }
+}
+
+cross_by_dimensions_one <- function(tbl, ..., add = TRUE){
   g_vars <- dplyr::group_vars(tbl)
+  columns <- rlang::ensyms(...) %>% purrr::map_chr(quo_name)
   tbl <- tbl %>%
     ungroup() %>%
-    mutate(nb_all = 0)
-  columns <- ensyms(...)
-  for (column in columns) {
-    tbl_1 <- tbl %>%
-      mutate(!!column := as.character(!! column))
-    tbl <- tbl %>%
-      mutate(!!column := 'All') %>%
-      mutate(nb_all = nb_all + 1) %>%
-      union_all(tbl_1)
-  }
-
-  if (!is.null(max_dimensions)){
-    nb_all_max <- rlang::dots_n(...) - max_dimensions
-    tbl <- tbl %>%
-      filter(nb_all >= nb_all_max)
-  }
-
-  tbl %>%
-    select(-nb_all) %>%
+    mutate_at(vars(!!!columns), as.character)
+  columns %>%
+    purrr::map(~ {
+      tbl %>%
+        mutate_at(vars(setdiff(columns, .x)), ~ "All")
+    }) %>%
+    purrr::reduce(union_all) %>%
+    union_all(tbl %>% mutate_at(vars(columns), ~ 'All')) %>%
     group_by_at(vars(g_vars)) %>%
-    group_by(!!!columns, add = add)
-
+    group_by_at(columns, .add = add)
 }
