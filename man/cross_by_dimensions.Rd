@@ -4,7 +4,7 @@
 \alias{cross_by_dimensions}
 \title{Cross by dimensions}
 \usage{
-cross_by_dimensions(tbl, ..., add = TRUE)
+cross_by_dimensions(tbl, ..., add = TRUE, max_dimensions = NULL)
 }
 \arguments{
 \item{tbl}{A table}
@@ -13,6 +13,10 @@ cross_by_dimensions(tbl, ..., add = TRUE)
 
 \item{add}{Whether to leave the existing groups as well instead of replacing
 them (by default, yes).}
+
+\item{max_dimensions}{The number of (non-All) dimensions that each row
+can have. This reduces the size of a metrics table, by limiting the number
+of dimensions that can be anything besides All at the same time.}
 }
 \description{
 This function stacks an extra copy of the table for each dimension column
@@ -35,6 +39,13 @@ flights <- nycflights13::flights \%>\%
 # find flight delays by carrier, origin, and Overall
 flight_summary <- nycflights13::flights \%>\%
   cross_by_dimensions(carrier, origin) \%>\%
+  summarize(nb_flights = n(),
+            avg_arr_delay = mean(arr_delay, na.rm = TRUE))
+
+flight_summary
+
+flight_summary <- nycflights13::flights \%>\%
+  cross_by_dimensions(carrier, origin, max_dimensions = 1) \%>\%
   summarize(nb_flights = n(),
             avg_arr_delay = mean(arr_delay, na.rm = TRUE))
 

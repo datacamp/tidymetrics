@@ -10,6 +10,9 @@
 #' @param ... A selection of columns
 #' @param add Whether to leave the existing groups as well instead of replacing
 #' them (by default, yes).
+#' @param max_dimensions The number of (non-All) dimensions that each row
+#' can have. This reduces the size of a metrics table, by limiting the number
+#' of dimensions that can be anything besides All at the same time.
 #'
 #' @importFrom rlang :=
 #'
@@ -34,6 +37,13 @@
 #'
 #' flight_summary
 #'
+#' flight_summary <- nycflights13::flights %>%
+#'   cross_by_dimensions(carrier, origin, max_dimensions = 1) %>%
+#'   summarize(nb_flights = n(),
+#'             avg_arr_delay = mean(arr_delay, na.rm = TRUE))
+#'
+#' flight_summary
+#'
 #' # This works well when combined with discard_dimensions, which filters for
 #' # an All level and removes the column
 #'
@@ -45,20 +55,51 @@
 #'   discard_dimensions(carrier)
 #'
 #' @export
-cross_by_dimensions <- function(tbl, ..., add = TRUE){
-  g_vars <- dplyr::group_vars(tbl)
-  tbl <- tbl %>%
-    ungroup()
-  columns <- ensyms(...)
-  for (column in columns) {
-    tbl_1 <- tbl %>%
-      mutate(!!column := as.character(!! column))
+cross_by_dimensions <- function(tbl, ..., add = TRUE, max_dimensions = NULL){
+  if (!is.null(max_dimensions) && max_dimensions == 1){
+    tbl %>%
+      cross_by_dimensions_one(..., add = add)
+  } else {
+    g_vars <- dplyr::group_vars(tbl)
+    columns <- ensyms(...)
     tbl <- tbl %>%
-      mutate(!!column := 'All') %>%
-      union_all(tbl_1)
-  }
+      ungroup() %>%
+      mutate_at(vars(!!!columns), as.character) %>%
+      mutate(nb_all = 0)
 
-  tbl %>%
+    for (column in columns) {
+      tbl <- tbl %>%
+        mutate(!!column := 'All') %>%
+        mutate(nb_all = nb_all + 1) %>%
+        union_all(tbl)
+    }
+
+    if (!is.null(max_dimensions)){
+      nb_all_max <- rlang::dots_n(...) - max_dimensions
+      tbl <- tbl %>%
+        filter(nb_all >= nb_all_max)
+    }
+
+    tbl %>%
+      select(-nb_all) %>%
+      group_by_at(vars(g_vars)) %>%
+      group_by(!!!columns, add = add)
+  }
+}
+
+cross_by_dimensions_one <- function(tbl, ..., add = TRUE){
+  g_vars <- dplyr::group_vars(tbl)
+  columns <- rlang::ensyms(...) %>% purrr::map_chr(quo_name)
+  tbl <- tbl %>%
+    ungroup() %>%
+    mutate_at(vars(!!!columns), as.character)
+  columns %>%
+    purrr::map(~ {
+      tbl %>%
+        mutate_at(vars(setdiff(columns, .x)), ~ "All")
+    }) %>%
+    purrr::reduce(union_all) %>%
+    union_all(tbl %>% mutate_at(vars(columns), ~ 'All')) %>%
     group_by_at(vars(g_vars)) %>%
-    group_by(!!!columns, add = add)
+    group_by_at(columns, .add = add)
 }
