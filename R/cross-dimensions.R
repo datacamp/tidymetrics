@@ -56,50 +56,46 @@
 #'
 #' @export
 cross_by_dimensions <- function(tbl, ..., add = TRUE, max_dimensions = NULL){
-  if (!is.null(max_dimensions) && max_dimensions == 1){
-    tbl %>%
-      cross_by_dimensions_one(..., add = add)
-  } else {
-    g_vars <- dplyr::group_vars(tbl)
-    columns <- ensyms(...)
-    tbl <- tbl %>%
-      ungroup() %>%
-      mutate_at(vars(!!!columns), as.character) %>%
-      mutate(nb_all = 0)
-
-    for (column in columns) {
-      tbl <- tbl %>%
-        mutate(!!column := 'All') %>%
-        mutate(nb_all = nb_all + 1) %>%
-        union_all(tbl)
-    }
-
-    if (!is.null(max_dimensions)){
-      nb_all_max <- rlang::dots_n(...) - max_dimensions
-      tbl <- tbl %>%
-        filter(nb_all >= nb_all_max)
-    }
-
-    tbl %>%
-      select(-nb_all) %>%
-      group_by_at(vars(g_vars)) %>%
-      group_by(!!!columns, add = add)
-  }
-}
-
-cross_by_dimensions_one <- function(tbl, ..., add = TRUE){
   g_vars <- dplyr::group_vars(tbl)
-  columns <- rlang::ensyms(...) %>% purrr::map_chr(quo_name)
+
+  columns <- ensyms(...)
+
+  # Set up all columns as characters (since they can be "All")
   tbl <- tbl %>%
     ungroup() %>%
     mutate_at(vars(!!!columns), as.character)
-  columns %>%
-    purrr::map(~ {
-      tbl %>%
-        mutate_at(vars(setdiff(columns, .x)), ~ "All")
-    }) %>%
-    purrr::reduce(union_all) %>%
-    union_all(tbl %>% mutate_at(vars(columns), ~ 'All')) %>%
+
+  # Separate cases if there's a max_dimensions argument
+  if (!is.null(max_dimensions)) {
+    tbl <- tbl %>%
+      cross_by_dimensions_limited(columns, max_dimensions = max_dimensions)
+  } else {
+    # Combine with k unions, instead of the 2 ^ n that cross_by_dimensions_limited would do
+    for (column in columns) {
+      tbl <- tbl %>%
+        mutate(!!column := 'All') %>%
+        union_all(tbl)
+    }
+  }
+
+  # Regroup
+  tbl %>%
     group_by_at(vars(g_vars)) %>%
-    group_by_at(columns, .add = add)
+    group_by(!!!columns, add = add)
+}
+
+cross_by_dimensions_limited <- function(tbl, column_symbols, max_dimensions){
+  columns <- purrr::map_chr(column_symbols, quo_name)
+
+  # Get all the combinations of columns with up to n items turned to "All"
+  num_not_all <- seq(length(columns) - max_dimensions, length(columns))
+
+  cols_list <- num_not_all %>%
+    purrr::map(~ utils::combn(columns, .)) %>%
+    purrr::map(~ lapply(1:ncol(.), function(i) .[, i])) %>%
+    purrr::reduce(c)
+
+  cols_list %>%
+    purrr::map(~ mutate_at(tbl, vars(.x), ~ "All")) %>%
+    purrr::reduce(union_all)
 }
