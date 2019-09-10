@@ -116,12 +116,12 @@ condense_metric <- function(metric, max_dimensions = 2) {
   v <- get_filter_dimensions(metric)
   if (length(v) > 0){
     ret <- metric %>%
-      group_by_at(v) %>%
-      group_nest() %>%
-      mutate(data = map(
+      dplyr::group_by_at(v) %>%
+      dplyr::group_nest() %>%
+      dplyr::mutate(data = map(
         data, condense_metric, max_dimensions = max_dimensions)
       ) %>%
-      unnest()
+      tidyr::unnest()
 
   } else {
     dims <- var_names_dimensions(metric)
