@@ -113,19 +113,37 @@ condense_metric <- function(metric, max_dimensions = 2) {
   if (!is.null(min_dimensions)) {
     max_dimensions <- max(min_dimensions, max_dimensions)
   }
+  v <- get_filter_dimensions(metric)
+  if (length(v) > 0){
+    ret <- metric %>%
+      group_by_at(v) %>%
+      group_nest() %>%
+      mutate(data = map(
+        data, condense_metric, max_dimensions = max_dimensions)
+      ) %>%
+      unnest()
 
-  dims <- var_names_dimensions(metric)
-  dimensions <- as.matrix(metric[, dims])
-  num_not_all <- rowSums(dimensions != "All")
+  } else {
+    dims <- var_names_dimensions(metric)
+    dimensions <- as.matrix(metric[, dims])
+    num_not_all <- rowSums(dimensions != "All")
 
-  ret <- metric[num_not_all <= max_dimensions, ]
-
+    ret <- metric[num_not_all <= max_dimensions, ]
+  }
   # If it's a tbl_metric, keep it that way
   class(ret) <- class(metric)
   attr(ret, "metadata") <- attr(metric, "metadata")
   ret
 }
 
+get_filter_dimensions <- function(tbl){
+  dim_names <- var_names_dimensions(tbl)
+  dim_names %>%
+    purrr::map(~ unique(tbl[[.x]])) %>%
+    rlang::set_names(dim_names) %>%
+    purrr::keep(~ !('All' %in% .x)) %>%
+    names()
+}
 
 ### S3 methods
 
