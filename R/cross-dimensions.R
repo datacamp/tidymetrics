@@ -13,6 +13,11 @@
 #' @param max_dimensions The number of (non-All) dimensions that each row
 #' can have. This reduces the size of a metrics table, by limiting the number
 #' of dimensions that can be anything besides All at the same time.
+#' @param collect_fun A function to collect or materialize intermediate tables.
+#'  This is useful when dealing with large tables in which case the resulting
+#'  SQL queries can become very complex and expensive to execute. Materializing
+#'  intermediate tables as temporary tables can improve the efficiency of
+#'  the query.
 #'
 #' @importFrom rlang :=
 #'
@@ -55,7 +60,8 @@
 #'   discard_dimensions(carrier)
 #'
 #' @export
-cross_by_dimensions <- function(tbl, ..., add = TRUE, max_dimensions = NULL){
+cross_by_dimensions <- function(tbl, ..., add = TRUE, max_dimensions = NULL,
+                                collect_fun = NULL){
   g_vars <- dplyr::group_vars(tbl)
 
   columns <- ensyms(...)
@@ -68,13 +74,17 @@ cross_by_dimensions <- function(tbl, ..., add = TRUE, max_dimensions = NULL){
   # Separate cases if there's a max_dimensions argument
   if (!is.null(max_dimensions)) {
     tbl <- tbl %>%
-      cross_by_dimensions_limited(columns, max_dimensions = max_dimensions)
+      cross_by_dimensions_limited(columns, max_dimensions = max_dimensions,
+                                  collect_fun = collect_fun)
   } else {
     # Combine with k unions, instead of the 2 ^ n that cross_by_dimensions_limited would do
     for (column in columns) {
       tbl <- tbl %>%
         mutate(!!column := 'All') %>%
         union_all(tbl)
+      if (!is.null(collect_fun)){
+        tbl <- collect_fun(tbl)
+      }
     }
   }
 
@@ -84,7 +94,8 @@ cross_by_dimensions <- function(tbl, ..., add = TRUE, max_dimensions = NULL){
     group_by(!!!columns, add = add)
 }
 
-cross_by_dimensions_limited <- function(tbl, column_symbols, max_dimensions){
+cross_by_dimensions_limited <- function(tbl, column_symbols, max_dimensions,
+                                        collect_fun = NULL){
   columns <- purrr::map_chr(column_symbols, quo_name)
 
   # Get all the combinations of columns with up to n items turned to "All"
@@ -95,7 +106,12 @@ cross_by_dimensions_limited <- function(tbl, column_symbols, max_dimensions){
     purrr::map(~ lapply(1:ncol(.), function(i) .[, i])) %>%
     purrr::reduce(c)
 
-  cols_list %>%
-    purrr::map(~ mutate_at(tbl, vars(.x), ~ "All")) %>%
+  d <- cols_list %>%
+    purrr::map(~ mutate_at(tbl, vars(.x), ~ "All"))
+  if (!is.null(collect_fun)){
+    d <- d %>%
+      purrr::map(collect_fun)
+  }
+  d %>%
     purrr::reduce(union_all)
 }
