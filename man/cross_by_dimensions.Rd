@@ -4,7 +4,8 @@
 \alias{cross_by_dimensions}
 \title{Cross by dimensions}
 \usage{
-cross_by_dimensions(tbl, ..., add = TRUE, max_dimensions = NULL)
+cross_by_dimensions(tbl, ..., add = TRUE, max_dimensions = NULL,
+  collect_fun = NULL)
 }
 \arguments{
 \item{tbl}{A table}
@@ -17,6 +18,12 @@ them (by default, yes).}
 \item{max_dimensions}{The number of (non-All) dimensions that each row
 can have. This reduces the size of a metrics table, by limiting the number
 of dimensions that can be anything besides All at the same time.}
+
+\item{collect_fun}{A function to collect or materialize intermediate tables.
+This is useful when dealing with large tables in which case the resulting
+SQL queries can become very complex and expensive to execute. Materializing
+intermediate tables as temporary tables can improve the efficiency of
+the query.}
 }
 \description{
 This function stacks an extra copy of the table for each dimension column
