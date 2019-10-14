@@ -42,7 +42,7 @@ create_metrics <- function(..., rmd_file = NULL) {
   data_nested <- data %>%
     gather_metrics() %>%
     filter(!is.na(value)) %>%
-    tidyr::nest(-metric) %>%
+    tidyr::nest_legacy(-metric) %>%
     dplyr::mutate(metric_full = paste(category, subcategory, metric, sep = "_"))
 
   missing_metrics <- setdiff(data_nested$metric_full, names(metric_docs))
