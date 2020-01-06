@@ -34,7 +34,7 @@ mtcars_by_cyl_gear \%>\%
 mtcars_by_cyl_gear \%>\%
   discard_dimensions(cyl)
 
-# Remove all dimensions except \\code{cyl}
+# Remove all dimensions except \code{cyl}
 mtcars_by_cyl_gear \%>\%
   discard_dimensions(-cyl)
 

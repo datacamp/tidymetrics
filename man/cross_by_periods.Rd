@@ -4,16 +4,29 @@
 \alias{cross_by_periods}
 \alias{cross_by_periods.tbl_lazy}
 \alias{cross_by_periods.tbl_df}
+\alias{cross_by_periods_cumulative}
 \title{Expand a table so that it can be aggregated by a period}
 \usage{
 cross_by_periods(tbl, periods, windows, intervals, ...)
 
-\method{cross_by_periods}{tbl_lazy}(tbl, periods = c("week", "month",
-  "quarter"), windows = c(), intervals = FALSE,
-  remote_date_periods = NULL, ...)
+\method{cross_by_periods}{tbl_lazy}(
+  tbl,
+  periods = c("week", "month", "quarter"),
+  windows = c(),
+  intervals = FALSE,
+  remote_date_periods = NULL,
+  ...
+)
 
-\method{cross_by_periods}{tbl_df}(tbl, periods = c("week", "month",
-  "quarter"), windows = c(), intervals = FALSE, ...)
+\method{cross_by_periods}{tbl_df}(
+  tbl,
+  periods = c("week", "month", "quarter"),
+  windows = c(),
+  intervals = FALSE,
+  ...
+)
+
+cross_by_periods_cumulative(tbl, remote_date_periods = NULL)
 }
 \arguments{
 \item{tbl}{A tbl, either local or remote.}

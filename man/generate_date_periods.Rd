@@ -4,9 +4,14 @@
 \alias{generate_date_periods}
 \title{Generate a table with pairings of dates and periods}
 \usage{
-generate_date_periods(start, end, periods = c("day", "week", "month",
-  "quarter", "year"), windows = c(7, 28, 56), intervals = FALSE,
-  today_date = lubridate::today())
+generate_date_periods(
+  start,
+  end,
+  periods = c("day", "week", "month", "quarter", "year"),
+  windows = c(7, 28, 56),
+  intervals = FALSE,
+  today_date = lubridate::today()
+)
 }
 \arguments{
 \item{start}{Start date}

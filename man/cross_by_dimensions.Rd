@@ -4,8 +4,13 @@
 \alias{cross_by_dimensions}
 \title{Cross by dimensions}
 \usage{
-cross_by_dimensions(tbl, ..., add = TRUE, max_dimensions = NULL,
-  collect_fun = NULL)
+cross_by_dimensions(
+  tbl,
+  ...,
+  add = TRUE,
+  max_dimensions = NULL,
+  collect_fun = NULL
+)
 }
 \arguments{
 \item{tbl}{A table}
