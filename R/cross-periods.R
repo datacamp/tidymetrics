@@ -138,3 +138,43 @@ check_cross_by_tbl <- function(tbl) {
          "If you have a datetime column, you should cast it to a date first.")
   }
 }
+
+
+#' @rdname cross_by_periods
+#' @export
+cross_by_periods_cumulative <- function(tbl, remote_date_periods = NULL){
+  gvars <- group_vars(tbl)
+  tbl <- tbl %>% ungroup()
+  date_range <- tbl %>%
+    summarize(
+      min = min(date, na.rm = TRUE),
+      max = max(date, na.rm = TRUE)
+    ) %>%
+    collect()
+  tbl %>%
+    rename(date_original = date) %>%
+    inner_join(remote_periods_cumulative(remote_date_periods), by = "date_original") %>%
+    filter(date >= !!date_range$min, date <= !!date_range$max) %>%
+    group_by_at(c("period", "date", gvars))
+}
+
+# Create a remote table of cumulative periods
+remote_periods_cumulative <- function(remote_date_periods = NULL){
+  if (is.null(remote_date_periods)) {
+    opt <- getOption("remote_date_periods")
+    if (is.null(opt)) {
+      stop("Can't find option remote_date_periods: have you initialized one for this database?")
+    }
+
+    remote_date_periods <- opt()
+  }
+  cumulative_periods <- remote_date_periods %>%
+    filter(period == 'day') %>%
+    select(period, date_original)
+  cumulative_periods %>%
+    cross_join(
+      cumulative_periods %>%
+        dplyr::transmute(date = date_original)
+    ) %>%
+    filter(date_original <= date)
+}
