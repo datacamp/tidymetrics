@@ -4,7 +4,7 @@
 #'
 #' @param x,y tbls to join
 #' @param ... additional arguments to be passed on to
-#'   \code{\link[dplyr]{full_join}} or \code{\link[tidyr]{crossing}}
+#'   [dplyr::full_join()] or [tidyr::crossing()]
 #' @export
 #' @examples
 #' d1 <- dplyr::tibble(x = 1:3)

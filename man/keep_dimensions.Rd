@@ -41,5 +41,5 @@ mtcars_by_cyl_gear \%>\%
 
 }
 \seealso{
-\code{\link{discard_dimensions}}
+\code{\link[=discard_dimensions]{discard_dimensions()}}
 }

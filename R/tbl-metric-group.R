@@ -2,7 +2,7 @@
 #'
 #' @param tbl A wide table of metrics
 #' @param group_name An optional underscore separated string as group_name. If
-#'   not specified, the category and subcategory of the metrics in \code{tbl}
+#'   not specified, the category and subcategory of the metrics in `tbl`
 #'   are concatenated to form the group_name. Specify a custom group_name only
 #'   if you are trying to save multiple metric groups in the same Rmd.
 #' @param rmd_file The Rmd file that generated the compact metrics, which has
@@ -44,8 +44,8 @@ create_metric_group <- function(tbl, group_name = NULL, rmd_file = NULL){
 
 #' Print method for tbl_metric_group
 #'
-#' @param x A tbl_metric_group object to \code{print}
-#' @param ... Additional parameters passed to \code{print}
+#' @param x A tbl_metric_group object to `print`
+#' @param ... Additional parameters passed to `print`
 #' @export
 print.tbl_metric_group <- function(x, ...) {
   m <- attr(x, "metadata")
@@ -66,8 +66,8 @@ as_tbl_metric_group <- function(x) {
 
 #' Metric dplyr S3 methods
 #'
-#' @param .data A \code{tbl_metric_group} object
-#' @param x For \code{as_tibble}, a \code{tbl_metric_group} object
+#' @param .data A `tbl_metric_group` object
+#' @param x For `as_tibble`, a `tbl_metric_group` object
 #' @param ... Arguments passed on to the appropriate dplyr verb
 #'
 #' @importFrom dplyr as_data_frame anti_join arrange filter group_by inner_join

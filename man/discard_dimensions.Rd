@@ -34,7 +34,7 @@ mtcars_by_cyl_gear \%>\%
 mtcars_by_cyl_gear \%>\%
   discard_dimensions(cyl)
 
-# Remove all dimensions except \code{cyl}
+# Remove all dimensions except `cyl`
 mtcars_by_cyl_gear \%>\%
   discard_dimensions(-cyl)
 
@@ -45,5 +45,5 @@ mtcars_by_cyl_gear \%>\%
   discard_dimensions(-one_of("cyl", "gear"))
 }
 \seealso{
-\code{\link{keep_dimensions}}
+\code{\link[=keep_dimensions]{keep_dimensions()}}
 }

@@ -3,7 +3,7 @@
 #' Some metrics like ARR are measured cumulatively, so in order to create a bar plot
 #' per month or quarter we need to pick the last value from each period. For example,
 #' the ARR for January 2019 would be measured as of 2019-01-31. Analogously
-#' to the tidyr function \code{complete()}, this adds rows representing each period
+#' to the tidyr function `complete()`, this adds rows representing each period
 #' present in the data.
 #'
 #' @param metric A metric table in wide format, containing "date" and "period" columns as

@@ -99,11 +99,11 @@ check_metric <- function(metric) {
 #' Condense a metric_tbl object to remove cases with multiple non-All dimensions
 #'
 #' This reduces the size of a metrics table, by limiting the number of dimensions
-#' that can be anything besides All at the same time. If there is a \code{min_dimensions}
+#' that can be anything besides All at the same time. If there is a `min_dimensions`
 #' field in the metric metadata, it never condenses beyond that (this is useful for some
 #' that need multiple dimensions to be interpretable)
 #'
-#' @param metric A \code{tbl_metric} object
+#' @param metric A `tbl_metric` object
 #' @param max_dimensions The number of (non-All) dimensions that each row
 #' can have
 #'
@@ -136,7 +136,7 @@ as_tbl_metric <- function(x) {
 
 #' Metric dplyr S3 methods
 #'
-#' @param .data A \code{tbl_metric} object
+#' @param .data A `tbl_metric` object
 #' @param x For as_data_frame, the
 #' @param ... Arguments passed on to the appropriate dplyr metric
 #'
@@ -159,7 +159,7 @@ as_tibble.tbl_metric <- function(x) {
 #' @param result The modified object, which is / might be missing the
 #'   class/attributes.
 #'
-#' @return \code{result}, now with class/attributes restored.
+#' @return `result`, now with class/attributes restored.
 reclass <- function(x, result) {
   UseMethod('reclass')
 }

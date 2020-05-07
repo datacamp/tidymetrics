@@ -9,7 +9,7 @@
 #' @param quietly If FALSE (default), display a message about what columns are
 #' being discarded.
 #'
-#' @seealso \code{\link{keep_dimensions}}
+#' @seealso [keep_dimensions()]
 #'
 #' @export
 #' @examples
@@ -27,7 +27,7 @@
 #' mtcars_by_cyl_gear %>%
 #'   discard_dimensions(cyl)
 #'
-#' # Remove all dimensions except \code{cyl}
+#' # Remove all dimensions except `cyl`
 #' mtcars_by_cyl_gear %>%
 #'   discard_dimensions(-cyl)
 #'
@@ -83,7 +83,7 @@ discard_dimensions <- function(tbl, ..., quietly = FALSE){
 #'
 #' @param tbl A metric tbl in wide format, with one or more dimensions.
 #' @param ... Dimensions from which "All" should be removed, as bare names
-#' or select helpers like \code{contains()}.
+#' or select helpers like `contains()`.
 #'
 #' @export
 #' @examples
@@ -118,7 +118,7 @@ remove_attribute_all <- function(tbl, ...){
 #'
 #' @param tbl A metric tbl in wide format, with one or more dimensions.
 #' @param ... Dimensions to keep, as bare names
-#' or select helpers like \code{contains()}.
+#' or select helpers like `contains()`.
 #' @param keep_attribute_all Whether to remove the "All" level from the dimensions
 #' @param quietly If FALSE (default), display a message about what columns are
 #' being discarded.
@@ -142,7 +142,7 @@ remove_attribute_all <- function(tbl, ...){
 #' mtcars_by_cyl_gear %>%
 #'   keep_dimensions(cyl, keep_attribute_all = TRUE)
 #'
-#' @seealso \code{\link{discard_dimensions}}
+#' @seealso [discard_dimensions()]
 #'
 #' @export
 keep_dimensions <- function(tbl, ..., keep_attribute_all = FALSE,
@@ -207,7 +207,7 @@ var_names_not_dimensions <- function(tbl){
 
 #' Remove dimensions with a constant level (single value)
 #'
-#' Use \code{constant_constant_dimensions} instead of \code{select} so the
+#' Use `constant_constant_dimensions` instead of `select` so the
 #' removed dimension value is added to the metadata attribute.
 #'
 #' @export

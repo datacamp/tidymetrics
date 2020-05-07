@@ -16,8 +16,8 @@
 #' @param ... Extra arguments, not used
 #'
 #' @return A tbl (either local or remote, depending on the input), where TODO. It is grouped by
-#' any grouping columns that were in the input, as well as by the new \code{date} and
-#' \code{period} columns.
+#' any grouping columns that were in the input, as well as by the new `date` and
+#' `period` columns.
 #'
 #' @examples
 #'

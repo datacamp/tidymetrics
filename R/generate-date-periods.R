@@ -7,7 +7,7 @@
 #' @param windows A vector of windows, each representing a # of days
 #' @param intervals Whether a preselected set of intervals starting from today, such as
 #' "Last Week", "Last 2 Weeks", or "All Time" should be included.
-#' @param today_date Date to count as "today": by default, \code{lubridate::today()}.
+#' @param today_date Date to count as "today": by default, `lubridate::today()`.
 generate_date_periods <- function(start,
                                   end,
                                   periods = c("day", "week", "month", "quarter", "year"),

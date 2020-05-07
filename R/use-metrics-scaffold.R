@@ -1,10 +1,10 @@
 #' Create a scaffold for documentating metrics
 #'
 #' Use this to generate a YAML scaffold for documenting metrics, just prior to running
-#' \code{\link{create_metrics}}. You can place this into the header of an Rmd and
+#' [create_metrics()]. You can place this into the header of an Rmd and
 #' fill in the names and descriptions.
 #'
-#' @param tbl A wide metric tbl, including \code{date}, \code{period}, optionally one or
+#' @param tbl A wide metric tbl, including `date`, `period`, optionally one or
 #' more dimensions, and one or more calculated metrics.
 #'
 #' @examples

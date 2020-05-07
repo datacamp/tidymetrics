@@ -12,7 +12,7 @@ more dimensions, and one or more calculated metrics.}
 }
 \description{
 Use this to generate a YAML scaffold for documenting metrics, just prior to running
-\code{\link{create_metrics}}. You can place this into the header of an Rmd and
+\code{\link[=create_metrics]{create_metrics()}}. You can place this into the header of an Rmd and
 fill in the names and descriptions.
 }
 \examples{

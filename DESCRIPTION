@@ -27,7 +27,7 @@ Imports:
     glue,
     purrr,
     rstudioapi
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Suggests: 
     ggplot2,
     testthat,
@@ -36,3 +36,4 @@ Suggests:
     dbplyr,
     RPostgreSQL,
     DBI
+Roxygen: list(markdown = TRUE)

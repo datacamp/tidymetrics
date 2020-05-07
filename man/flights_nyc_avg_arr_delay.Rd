@@ -4,14 +4,16 @@
 \name{flights_nyc_avg_arr_delay}
 \alias{flights_nyc_avg_arr_delay}
 \title{Average arrival delay of NYC flights}
-\format{A tbl_metric object with dimensions:
+\format{
+A tbl_metric object with dimensions:
 \describe{
-  \item{origin}{Airport code, either JFK, LGA, or EWR}
-  \item{carrier}{Two-letter airline code}
-  \item{period}{Either week, month, or quarter}
-  \item{date}{Date}
-  \item{value}{Average arrival delay of a flight in this period}
-}}
+\item{origin}{Airport code, either JFK, LGA, or EWR}
+\item{carrier}{Two-letter airline code}
+\item{period}{Either week, month, or quarter}
+\item{date}{Date}
+\item{value}{Average arrival delay of a flight in this period}
+}
+}
 \source{
 \url{https://cran.r-project.org/package=nycflights13}
 }

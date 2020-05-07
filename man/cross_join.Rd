@@ -10,7 +10,7 @@ cross_join(x, y, ...)
 \item{x, y}{tbls to join}
 
 \item{...}{additional arguments to be passed on to
-\code{\link[dplyr]{full_join}} or \code{\link[tidyr]{crossing}}}
+\code{\link[dplyr:full_join]{dplyr::full_join()}} or \code{\link[tidyr:crossing]{tidyr::crossing()}}}
 }
 \description{
 Locally, this is equivalent to tidyr::crossing.
