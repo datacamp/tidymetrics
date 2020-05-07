@@ -1,4 +1,4 @@
-#' Create a scaffold for documentating metrics
+#' Create a scaffold for documenting metrics
 #'
 #' Use this to generate a YAML scaffold for documenting metrics, just prior to running
 #' [create_metrics()]. You can place this into the header of an Rmd and
