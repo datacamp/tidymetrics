@@ -50,7 +50,7 @@ use_metrics_scaffold <- function(tbl) {
   invisible(out)
 }
 
-doc_dimensions <- function(...){
+doc_dimensions <- function(...) {
   names_dimensions <- list(...) %>%
     purrr::map(ungroup) %>%
     purrr::map(var_names_dimensions) %>%
@@ -68,7 +68,7 @@ doc_dimensions <- function(...){
   invisible(ret)
 }
 
-doc_metrics <- function(...){
+doc_metrics <- function(...) {
   names_metrics <- list(...) %>%
     purrr::map(ungroup) %>%
     purrr::map(~ {
@@ -79,8 +79,8 @@ doc_metrics <- function(...){
     rlang::squash_chr() %>%
     unique()
   ret <- names_metrics %>%
-      purrr::map(~ list(title = .x, description = .x)) %>%
-      rlang::set_names(names_metrics)
+    purrr::map(~ list(title = .x, description = .x)) %>%
+    rlang::set_names(names_metrics)
   message(
     "Using default docs for metrics. ",
     "Please copy to YAML frontmatter of Rmd and edit"
