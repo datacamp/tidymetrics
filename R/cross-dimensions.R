@@ -94,9 +94,21 @@ cross_by_dimensions <- function(tbl, ..., add = TRUE, max_dimensions = NULL,
   }
 
   # Regroup
-  tbl %>%
-    group_by_at(vars(g_vars)) %>%
-    group_by(!!!columns, add = add)
+  # NOTE: dplyr 1.0.0 deprecates add in favor of .add
+  if (has_add()){
+    tbl %>%
+      group_by_at(vars(g_vars)) %>%
+      group_by(!!!columns, add = add)
+  } else {
+    tbl %>%
+      group_by_at(vars(g_vars)) %>%
+      group_by(!!!columns, .add = add)
+  }
+
+}
+
+has_add <- function(){
+  'add' %in% names(formals(dplyr::group_by))
 }
 
 cross_by_dimensions_limited <- function(tbl, column_symbols, max_dimensions,
