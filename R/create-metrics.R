@@ -81,10 +81,10 @@ create_metrics <- function(..., rmd_file = NULL) {
 }
 
 get_metric_docs <- function(rmd_file = NULL) {
-  if (!is.null(rmd_file)) {
-    metric_docs <- parse_metrics_header(rmarkdown::yaml_front_matter(rmd_file))
+  metric_docs <- if (!is.null(rmd_file)) {
+    parse_metrics_header(rmarkdown::yaml_front_matter(rmd_file))
   } else if (length(rmarkdown::metadata) > 0) {
-    metric_docs <- parse_metrics_header(rmarkdown::metadata)
+    parse_metrics_header(rmarkdown::metadata)
   } else {
     # If running in RStudio, get the current document
     rmd_file <- rstudioapi::getActiveDocumentContext()$path
@@ -97,7 +97,7 @@ get_metric_docs <- function(rmd_file = NULL) {
       )
     }
 
-    metric_docs <- parse_metrics_header(rmarkdown::yaml_front_matter(rmd_file))
+    parse_metrics_header(rmarkdown::yaml_front_matter(rmd_file))
   }
   return(metric_docs)
 }
