@@ -69,7 +69,7 @@ create_metrics <- function(...,
   data_nested <- data %>%
     gather_metrics() %>%
     filter(!is.na(value)) %>%
-    tidyr::nest_legacy(-metric) %>%
+    tidyr::nest(data = -metric) %>%
     dplyr::mutate(metric_full = purrr::map_chr(metric, ~ {
       y <- c(category, subcategory, .x)
       paste(y[y != ""], collapse = "_")
@@ -116,9 +116,11 @@ get_rmd_metadata <- function(rmd_file = NULL) {
     rmarkdown::yaml_front_matter(rmd_file)
   } else if (length(rmarkdown::metadata) > 0) {
     rmarkdown::metadata
-  } else {
+  } else if (interactive()){
     rmd_file <- rstudioapi::getActiveDocumentContext()$path
     rmarkdown::yaml_front_matter(rmd_file)
+  } else {
+    list()
   }
 }
 
