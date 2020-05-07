@@ -33,7 +33,7 @@ the query.}
 \description{
 This function stacks an extra copy of the table for each dimension column
 specified as an argument, replaces the value of the column with the word
-"Alll", and finally groups by all the columns. It acts as an extended
+"All", and finally groups by all the columns. It acts as an extended
 \code{group_by} that allows complete summaries across each individual
 dimension and possible combinations. It works both in-database and in-memory.
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/use-metrics-scaffold.R
 \name{use_metrics_scaffold}
 \alias{use_metrics_scaffold}
-\title{Create a scaffold for documentating metrics}
+\title{Create a scaffold for documenting metrics}
 \usage{
 use_metrics_scaffold(tbl)
 }

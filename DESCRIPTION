@@ -35,5 +35,7 @@ Suggests:
     covr,
     dbplyr,
     RPostgreSQL,
-    DBI
+    DBI,
+    spelling
 Roxygen: list(markdown = TRUE)
+Language: en-US
