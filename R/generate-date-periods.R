@@ -36,7 +36,8 @@ generate_date_periods <- function(start,
   if (length(windows) > 0) {
     window_offsets <- tibble::tibble(window_size = windows) %>%
       dplyr::mutate(period = paste0("rolling_", window_size, "d")) %>%
-      tidyr::unnest(offset = purrr::map(window_size, seq_len)) %>%
+      dplyr::mutate(offset = purrr::map(window_size, seq_len)) %>%
+      tidyr::unnest(offset) %>%
       dplyr::mutate(offset = offset - 1)
 
     window_periods <- tibble(date_original = dates) %>%
