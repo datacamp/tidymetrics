@@ -30,7 +30,7 @@ use_metrics_scaffold <- function(tbl) {
 
   names_dimensions <- var_names_dimensions(tbl)
   dimensions <- names_dimensions %>%
-    purrr::map(~ list(title = "<TODO>", description = "<TODO>")) %>%
+    purrr::map(~ list(title = .x, description = .x)) %>%
     rlang::set_names(names_dimensions)
 
   if (length(dimensions) == 0) {
@@ -42,10 +42,49 @@ use_metrics_scaffold <- function(tbl) {
     colnames()
 
   metrics <- names_metrics %>%
-    purrr::map(~ list(title = "<TODO>", description = "<TODO>")) %>%
+    purrr::map(~ list(title = .x, description = .x)) %>%
     rlang::set_names(names_metrics)
 
   out <- list(metrics = metrics, dimensions = dimensions)
   cat(yaml::as.yaml(out))
   invisible(out)
+}
+
+doc_dimensions <- function(...){
+  names_dimensions <- list(...) %>%
+    purrr::map(ungroup) %>%
+    purrr::map(var_names_dimensions) %>%
+    purrr::keep(~ length(.x) > 0) %>%
+    unlist()
+
+  ret <- names_dimensions %>%
+    purrr::map(~ list(title = .x, description = .x)) %>%
+    rlang::set_names(names_dimensions)
+  message(
+    "Using default docs for dimensions. ",
+    "Please copy to YAML frontmatter of Rmd and edit"
+  )
+  cat(yaml::as.yaml(list(dimensions = ret)))
+  invisible(ret)
+}
+
+doc_metrics <- function(...){
+  names_metrics <- list(...) %>%
+    purrr::map(ungroup) %>%
+    purrr::map(~ {
+      names_metrics <- .x %>%
+        select_if(is.numeric) %>%
+        colnames()
+    }) %>%
+    rlang::squash_chr() %>%
+    unique()
+  ret <- names_metrics %>%
+      purrr::map(~ list(title = .x, description = .x)) %>%
+      rlang::set_names(names_metrics)
+  message(
+    "Using default docs for metrics. ",
+    "Please copy to YAML frontmatter of Rmd and edit"
+  )
+  cat(yaml::as.yaml(list(metrics = ret)))
+  invisible(ret)
 }
