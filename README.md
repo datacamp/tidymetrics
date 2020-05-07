@@ -2,8 +2,18 @@
 
 **Authors:** Ramnath Vaidyanathan, [David Robinson](http://varianceexplained.org/)<br/>
 
+<!-- badges: start -->
+  [![R build status](https://github.com/ramnathv/tidymetrics/workflows/R-CMD-check/badge.svg)](https://github.com/ramnathv/tidymetrics/actions)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![Codecov test coverage](https://codecov.io/gh/ramnathv/tidymetrics/branch/master/graph/badge.svg)](https://codecov.io/gh/ramnathv/tidymetrics?branch=master)
+<!-- badges: end -->
+
+<!--
+
 [![Travis build status](https://travis-ci.org/ramnathv/tidymetrics.svg?branch=master)](https://travis-ci.org/ramnathv/tidymetrics)
 [![Codecov test coverage](https://codecov.io/gh/ramnathv/tidymetrics/branch/master/graph/badge.svg)](https://codecov.io/gh/ramnathv/tidymetrics?branch=master) [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+
+-->
 
 Dimensional modeling done the tidy way!
 
