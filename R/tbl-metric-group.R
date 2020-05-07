@@ -10,24 +10,24 @@
 #' If no Rmd file is given, it uses the currently running one.
 #' @export
 #' @rdname metric_group
-create_metric_group <- function(tbl, group_name = NULL, rmd_file = NULL){
+create_metric_group <- function(tbl, group_name = NULL, rmd_file = NULL) {
   metric_details <- get_metric_docs(rmd_file = rmd_file)
-  if (is.null(group_name)){
+  if (is.null(group_name)) {
     group_name <- names(metric_details)[1] %>%
       stringr::str_split("_") %>%
       magrittr::extract2(1) %>%
       magrittr::extract(1:2) %>%
       paste(collapse = "_")
   }
-  cat_subcat = stringr::str_split(group_name, "_")[[1]]
-  category = cat_subcat[1]
-  subcategory = cat_subcat[2]
+  cat_subcat <- stringr::str_split(group_name, "_")[[1]]
+  category <- cat_subcat[1]
+  subcategory <- cat_subcat[2]
   metric_ids <- var_names_not_dimensions(tbl) %>%
     setdiff(c("date", "period")) %>%
-    paste(category, subcategory, . , sep = "_")
+    paste(category, subcategory, ., sep = "_")
   metric_details <- metric_details %>%
     rlang::set_names(
-      stringr::str_split_fixed(names(.), "_", 3)[,3]
+      stringr::str_split_fixed(names(.), "_", 3)[, 3]
     )
   dimension_details <- metric_details[[1]]$dimensions
   metadata <- list(
@@ -50,9 +50,11 @@ create_metric_group <- function(tbl, group_name = NULL, rmd_file = NULL){
 print.tbl_metric_group <- function(x, ...) {
   m <- attr(x, "metadata")
 
-  header <- paste0("# Metric group\n",
-                   "# Category: ", m$category, "\n",
-                   "# Subcategory: ", m$subcategory, "\n")
+  header <- paste0(
+    "# Metric group\n",
+    "# Category: ", m$category, "\n",
+    "# Subcategory: ", m$subcategory, "\n"
+  )
 
   cat(pillar::style_subtle(header))
 
@@ -164,4 +166,3 @@ count.tbl_metric_group <- function(.data, ...) {
 transmute.tbl_metric_group <- function(.data, ...) {
   reclass(.data, NextMethod())
 }
-

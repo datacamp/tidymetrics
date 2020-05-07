@@ -65,12 +65,13 @@ flights <- nycflights13::flights \%>\%
 # find flight delays by week, month, and quarter
 flight_summary <- flights \%>\%
   cross_by_periods() \%>\%
-  summarize(nb_flights = n(),
-            avg_arr_delay = mean(arr_delay, na.rm = TRUE))
+  summarize(
+    nb_flights = n(),
+    avg_arr_delay = mean(arr_delay, na.rm = TRUE)
+  )
 
 library(ggplot2)
 
 ggplot(flight_summary, aes(date, avg_arr_delay, color = period)) +
   geom_line()
-
 }

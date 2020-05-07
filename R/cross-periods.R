@@ -29,14 +29,15 @@
 #' # find flight delays by week, month, and quarter
 #' flight_summary <- flights %>%
 #'   cross_by_periods() %>%
-#'   summarize(nb_flights = n(),
-#'             avg_arr_delay = mean(arr_delay, na.rm = TRUE))
+#'   summarize(
+#'     nb_flights = n(),
+#'     avg_arr_delay = mean(arr_delay, na.rm = TRUE)
+#'   )
 #'
 #' library(ggplot2)
 #'
 #' ggplot(flight_summary, aes(date, avg_arr_delay, color = period)) +
 #'   geom_line()
-#'
 #' @export
 cross_by_periods <- function(tbl, periods, windows, intervals, ...) {
   UseMethod("cross_by_periods")
@@ -44,19 +45,19 @@ cross_by_periods <- function(tbl, periods, windows, intervals, ...) {
 
 #' @rdname cross_by_periods
 #' @export
-cross_by_periods.tbl_lazy <-  function(tbl,
-                                       periods = c("week", "month", "quarter"),
-                                       windows = c(),
-                                       intervals = FALSE,
-                                       remote_date_periods = NULL,
-                                       ...) {
+cross_by_periods.tbl_lazy <- function(tbl,
+                                      periods = c("week", "month", "quarter"),
+                                      windows = c(),
+                                      intervals = FALSE,
+                                      remote_date_periods = NULL,
+                                      ...) {
   check_cross_by_tbl(tbl)
   gvars <- group_vars(tbl)
   tbl <- tbl %>%
     ungroup()
   # If user provides a vector of intervals, set intervals to TRUE
   # This is required for backward compatibility with the previous version.
-  if (!is.logical(intervals) && length(intervals) > 0){
+  if (!is.logical(intervals) && length(intervals) > 0) {
     intervals <- TRUE
   }
   if (is.null(remote_date_periods)) {
@@ -73,7 +74,7 @@ cross_by_periods.tbl_lazy <-  function(tbl,
   remote_periods <- remote_date_periods %>%
     filter(
       (period %in% all_periods) |
-      (intervals && (period %LIKE% "%All%" || period %LIKE% "%Last%"))
+        (intervals && (period %LIKE% "%All%" || period %LIKE% "%Last%"))
     )
 
   ## TODO: check that the periods and dates match what's available in the table
@@ -85,7 +86,7 @@ cross_by_periods.tbl_lazy <-  function(tbl,
     group_by_at(c("period", "date", gvars))
 }
 
-clip_incomplete_rolling_periods <- function(tbl){
+clip_incomplete_rolling_periods <- function(tbl) {
   # We need to remove incomplete rolling periods at both ends
   # since they could be misleading.
   date_range <- tbl %>%
@@ -99,9 +100,9 @@ clip_incomplete_rolling_periods <- function(tbl){
   date_thresholds <- date_range$min + c(7, 28, 56)
   tbl %>%
     mutate(include = case_when(
-      period == 'rolling_7d'  ~ date >= !!date_thresholds[1] & date <= !!date_range$max,
-      period == 'rolling_28d' ~ date >= !!date_thresholds[2] & date <= !!date_range$max,
-      period == 'rolling_56d' ~ date >= !!date_thresholds[3] & date <= !!date_range$max,
+      period == "rolling_7d" ~ date >= !!date_thresholds[1] & date <= !!date_range$max,
+      period == "rolling_28d" ~ date >= !!date_thresholds[2] & date <= !!date_range$max,
+      period == "rolling_56d" ~ date >= !!date_thresholds[3] & date <= !!date_range$max,
       TRUE ~ TRUE
     )) %>%
     filter(include) %>%
@@ -110,21 +111,22 @@ clip_incomplete_rolling_periods <- function(tbl){
 
 #' @rdname cross_by_periods
 #' @export
-cross_by_periods.tbl_df <-  function(tbl,
-                                     periods = c("week", "month", "quarter"),
-                                     windows = c(),
-                                     intervals = FALSE,
-                                     ...) {
+cross_by_periods.tbl_df <- function(tbl,
+                                    periods = c("week", "month", "quarter"),
+                                    windows = c(),
+                                    intervals = FALSE,
+                                    ...) {
   ## TODO:
   ## 1. Update the in-memory version of cross-by-periods to
   ##    follow the same logic as the remote version (clipping, intervals)
   check_cross_by_tbl(tbl)
 
   date_periods <- generate_date_periods(min(tbl$date),
-                                        max(tbl$date),
-                                        periods = periods,
-                                        windows = windows,
-                                        intervals = intervals)
+    max(tbl$date),
+    periods = periods,
+    windows = windows,
+    intervals = intervals
+  )
 
   tbl %>%
     rename(date_original = date) %>%
@@ -134,15 +136,17 @@ cross_by_periods.tbl_df <-  function(tbl,
 
 check_cross_by_tbl <- function(tbl) {
   if (!("date" %in% colnames(tbl))) {
-    stop("tbl must have a column named \"date\" to be used with cross_by_periods. ",
-         "If you have a datetime column, you should cast it to a date first.")
+    stop(
+      "tbl must have a column named \"date\" to be used with cross_by_periods. ",
+      "If you have a datetime column, you should cast it to a date first."
+    )
   }
 }
 
 
 #' @rdname cross_by_periods
 #' @export
-cross_by_periods_cumulative <- function(tbl, remote_date_periods = NULL){
+cross_by_periods_cumulative <- function(tbl, remote_date_periods = NULL) {
   gvars <- group_vars(tbl)
   tbl <- tbl %>% ungroup()
   date_range <- tbl %>%
@@ -159,7 +163,7 @@ cross_by_periods_cumulative <- function(tbl, remote_date_periods = NULL){
 }
 
 # Create a remote table of cumulative periods
-remote_periods_cumulative <- function(remote_date_periods = NULL){
+remote_periods_cumulative <- function(remote_date_periods = NULL) {
   if (is.null(remote_date_periods)) {
     opt <- getOption("remote_date_periods")
     if (is.null(opt)) {
@@ -169,7 +173,7 @@ remote_periods_cumulative <- function(remote_date_periods = NULL){
     remote_date_periods <- opt()
   }
   cumulative_periods <- remote_date_periods %>%
-    filter(period == 'day') %>%
+    filter(period == "day") %>%
     select(period, date_original)
   cumulative_periods %>%
     cross_join(

@@ -11,7 +11,6 @@
 #' @examples
 #'
 #' # TODO
-#'
 #' @export
 create_metrics <- function(..., rmd_file = NULL) {
   metrics <- list(...)
@@ -26,7 +25,8 @@ create_metrics <- function(..., rmd_file = NULL) {
 
     # A structure check ensuring uniqueness across all objects
     assertthat::assert_that(length(unique(names(all_metrics))) == length(all_metrics),
-                            msg = "Metrics don't have unique names")
+      msg = "Metrics don't have unique names"
+    )
 
     return(all_metrics)
   }
@@ -51,12 +51,14 @@ create_metrics <- function(..., rmd_file = NULL) {
   }
 
   metrics_combined <- data_nested %>%
-    mutate(documentation = metric_docs[metric_full],
-           combined = purrr::map2(data, documentation, combine_metric))
+    mutate(
+      documentation = metric_docs[metric_full],
+      combined = purrr::map2(data, documentation, combine_metric)
+    )
 
   ret <- metrics_combined$combined %>%
     purrr::map(~ {
-      attr(.x, 'metadata')$updated_at = Sys.time()
+      attr(.x, "metadata")$updated_at <- Sys.time()
       return(.x)
     })
   names(ret) <- metrics_combined$metric_full
@@ -65,19 +67,20 @@ create_metrics <- function(..., rmd_file = NULL) {
   context_name <- paste(category, subcategory, sep = "_")
 
   assertthat::assert_that(length(ret) > 0,
-                          msg = "No metrics found ({ context_name })")
+    msg = "No metrics found ({ context_name })"
+  )
   assertthat::assert_that(length(unique(names(ret))) == length(ret),
-                          msg = "Metrics don't have unique names ({ context_name })")
+    msg = "Metrics don't have unique names ({ context_name })"
+  )
 
   for (metric in ret) {
     check_metric(metric)
   }
 
   purrr::map(ret, prune_dimensions)
-
 }
 
-get_metric_docs <- function(rmd_file = NULL){
+get_metric_docs <- function(rmd_file = NULL) {
   if (!is.null(rmd_file)) {
     metric_docs <- parse_metrics_header(rmarkdown::yaml_front_matter(rmd_file))
   } else if (length(rmarkdown::metadata) > 0) {
@@ -87,9 +90,11 @@ get_metric_docs <- function(rmd_file = NULL){
     rmd_file <- rstudioapi::getActiveDocumentContext()$path
 
     if (!stringr::str_detect(rmd_file, "\\.Rmd$")) {
-      stop("create_metrics must either be given the path to an Rmd file, run in a rendered Rmd, ",
-           "or be run in RStudio as part of the Rmd (that is, by pressing CMD-RETURN with your ",
-           "cursor in the Rmd, not e.g. copy-pasted into the R terminal).")
+      stop(
+        "create_metrics must either be given the path to an Rmd file, run in a rendered Rmd, ",
+        "or be run in RStudio as part of the Rmd (that is, by pressing CMD-RETURN with your ",
+        "cursor in the Rmd, not e.g. copy-pasted into the R terminal)."
+      )
     }
 
     metric_docs <- parse_metrics_header(rmarkdown::yaml_front_matter(rmd_file))
@@ -103,17 +108,26 @@ get_metric_docs <- function(rmd_file = NULL){
 parse_metrics_header <- function(y) {
   name_components <- stringr::str_split(y$name, "_")[[1]]
 
-  shared <- c(list(
-    category = name_components[2],
-    subcategory = name_components[3]),
-    y[c("owner", "dimensions")])
+  shared <- c(
+    list(
+      category = name_components[2],
+      subcategory = name_components[3]
+    ),
+    y[c("owner", "dimensions")]
+  )
 
-  ret <- purrr::map(names(y$metrics), ~ c(list(metric = .,
-                                               metric_full = paste(name_components[2],
-                                                                   name_components[3],
-                                                                   ., sep = "_")),
-                                          y$metrics[[.]],
-                                          shared))
+  ret <- purrr::map(names(y$metrics), ~ c(
+    list(
+      metric = .,
+      metric_full = paste(name_components[2],
+        name_components[3],
+        .,
+        sep = "_"
+      )
+    ),
+    y$metrics[[.]],
+    shared
+  ))
   names(ret) <- purrr::map(ret, "metric_full")
   ret
 }

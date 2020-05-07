@@ -21,6 +21,6 @@ removed dimension value is added to the metadata attribute.
 library(dplyr)
 
 flights_nyc_avg_arr_delay \%>\%
-  filter(origin == 'JFK') \%>\%
+  filter(origin == "JFK") \%>\%
   discard_constant_dimensions()
 }

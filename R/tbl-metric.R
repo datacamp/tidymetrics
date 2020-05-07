@@ -15,14 +15,16 @@ print.tbl_metric <- function(x, ...) {
   periods <- unique(x$period)
   m <- attr(x, "metadata")
 
-  header <- paste0("# Metric: ", m$title, " (", m$metric_full, ")\n",
-                   "# Dimensions: ", paste(var_names_dimensions(x), collapse = ", "), "\n")
+  header <- paste0(
+    "# Metric: ", m$title, " (", m$metric_full, ")\n",
+    "# Dimensions: ", paste(var_names_dimensions(x), collapse = ", "), "\n"
+  )
 
   if (!all(is.na(x$date))) {
     header <- paste0(header, "# Dates: ", min(x$date, na.rm = TRUE), " to ", max(x$date, na.rm = TRUE), "\n")
   }
   header <- paste0(header, "# Periods: ", paste(periods, collapse = ", "), "\n")
-  if (!is.null(m$updated_at)){
+  if (!is.null(m$updated_at)) {
     header <- paste0(header, "# Updated At: ", m$updated_at, "\n")
   }
 
@@ -41,29 +43,36 @@ print.tbl_metric <- function(x, ...) {
 #' @export
 check_metric <- function(metric) {
   assertthat::assert_that(inherits(metric, "tbl_metric"),
-                          msg = "Not a 'tbl_metric' object (check_metric parses tbl_metric objects)")
+    msg = "Not a 'tbl_metric' object (check_metric parses tbl_metric objects)"
+  )
 
   # Need metric_full to print error messages
   metadata <- attr(metric, "metadata")
   assertthat::assert_that("metric_full" %in% names(metadata),
-                          msg = "Missing metric_full field in metric object")
+    msg = "Missing metric_full field in metric object"
+  )
 
   context_name <- metadata$metric_full
 
   # check the rest
-  expected_names <- c("metric", "title", "description", "category",
-                      "subcategory", "owner")
+  expected_names <- c(
+    "metric", "title", "description", "category",
+    "subcategory", "owner"
+  )
 
   for (n in expected_names) {
     assertthat::assert_that(n %in% names(metadata),
-                            msg = glue::glue("Missing { n } field ({ context_name })"))
+      msg = glue::glue("Missing { n } field ({ context_name })")
+    )
   }
 
   ## check the data
   assertthat::assert_that(inherits(metric, "tbl_df"),
-                          msg = glue::glue("Metric data should be a tbl_df ({ context_name })"))
+    msg = glue::glue("Metric data should be a tbl_df ({ context_name })")
+  )
   assertthat::assert_that(nrow(metric) > 0,
-                          msg = glue::glue("Metric data should have at least one row ({ context_name })"))
+    msg = glue::glue("Metric data should have at least one row ({ context_name })")
+  )
 
   fields <- colnames(metric)
   fields_numeric <- metric %>%
@@ -72,16 +81,16 @@ check_metric <- function(metric) {
   fields_dimensions <- var_names_dimensions(metric)
 
   assertthat::assert_that(
-    'date' %in% fields,
+    "date" %in% fields,
     msg = glue::glue("A metric table should have a field named date ({ context_name })")
   )
   assertthat::assert_that(
-    'period' %in% fields,
+    "period" %in% fields,
     msg = glue::glue("A metric table should have a field named period ({ context_name })")
   )
   assertthat::assert_that(
     length(fields_numeric) >= 1,
-    msg = glue::glue('A metric table should have at least one numeric field  ({ context_name })')
+    msg = glue::glue("A metric table should have at least one numeric field  ({ context_name })")
   )
 
 
@@ -90,9 +99,11 @@ check_metric <- function(metric) {
   # check dimension documentation
   for (dn in names(d)) {
     assertthat::assert_that("title" %in% names(d[[dn]]),
-                            msg = glue::glue("Missing title in dimension { dn } ({ context_name })"))
+      msg = glue::glue("Missing title in dimension { dn } ({ context_name })")
+    )
     assertthat::assert_that("description" %in% names(d[[dn]]),
-                            msg = glue::glue("Missing title in dimension { dn } ({ context_name })"))
+      msg = glue::glue("Missing title in dimension { dn } ({ context_name })")
+    )
   }
 }
 
@@ -161,14 +172,14 @@ as_tibble.tbl_metric <- function(x) {
 #'
 #' @return `result`, now with class/attributes restored.
 reclass <- function(x, result) {
-  UseMethod('reclass')
+  UseMethod("reclass")
 }
 
 #' @export
 reclass.tbl_metric <- function(x, result) {
   class(result) <- unique(c(class(x)[[1]], class(result)))
   attr(result, class(x)[[1]]) <- attr(x, class(x)[[1]])
-  attr(result, 'metadata') <- attr(x, 'metadata')
+  attr(result, "metadata") <- attr(x, "metadata")
   result
 }
 
@@ -261,19 +272,19 @@ transmute.tbl_metric <- function(.data, ...) {
 
 #' @rdname metric-s3
 #' @export
-distinct.tbl_metric <- function(.data, ...){
+distinct.tbl_metric <- function(.data, ...) {
   .data <- tibble::as_data_frame(.data)
   NextMethod()
 }
 
 # utilities
-prune_dimensions <- function(metric){
-  metadata <- attr(metric, 'metadata')
+prune_dimensions <- function(metric) {
+  metadata <- attr(metric, "metadata")
   names_dimensions <- intersect(
     names(metadata$dimensions),
     colnames(metric)
   )
   metadata$dimensions <- metadata$dimensions[names_dimensions]
-  attr(metric, 'metadata') <- metadata
+  attr(metric, "metadata") <- metadata
   return(metric)
 }

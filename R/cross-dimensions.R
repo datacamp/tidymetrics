@@ -37,15 +37,19 @@
 #' # find flight delays by carrier, origin, and Overall
 #' flight_summary <- nycflights13::flights %>%
 #'   cross_by_dimensions(carrier, origin) %>%
-#'   summarize(nb_flights = n(),
-#'             avg_arr_delay = mean(arr_delay, na.rm = TRUE))
+#'   summarize(
+#'     nb_flights = n(),
+#'     avg_arr_delay = mean(arr_delay, na.rm = TRUE)
+#'   )
 #'
 #' flight_summary
 #'
 #' flight_summary <- nycflights13::flights %>%
 #'   cross_by_dimensions(carrier, origin, max_dimensions = 1) %>%
-#'   summarize(nb_flights = n(),
-#'             avg_arr_delay = mean(arr_delay, na.rm = TRUE))
+#'   summarize(
+#'     nb_flights = n(),
+#'     avg_arr_delay = mean(arr_delay, na.rm = TRUE)
+#'   )
 #'
 #' flight_summary
 #'
@@ -58,10 +62,9 @@
 #'
 #' flight_summary %>%
 #'   discard_dimensions(carrier)
-#'
 #' @export
 cross_by_dimensions <- function(tbl, ..., add = TRUE, max_dimensions = NULL,
-                                collect_fun = NULL){
+                                collect_fun = NULL) {
   g_vars <- dplyr::group_vars(tbl)
 
   columns <- ensyms(...)
@@ -74,15 +77,17 @@ cross_by_dimensions <- function(tbl, ..., add = TRUE, max_dimensions = NULL,
   # Separate cases if there's a max_dimensions argument
   if (!is.null(max_dimensions)) {
     tbl <- tbl %>%
-      cross_by_dimensions_limited(columns, max_dimensions = max_dimensions,
-                                  collect_fun = collect_fun)
+      cross_by_dimensions_limited(columns,
+        max_dimensions = max_dimensions,
+        collect_fun = collect_fun
+      )
   } else {
     # Combine with k unions, instead of the 2 ^ n that cross_by_dimensions_limited would do
     for (column in columns) {
       tbl <- tbl %>%
-        mutate(!!column := 'All') %>%
+        mutate(!!column := "All") %>%
         union_all(tbl)
-      if (!is.null(collect_fun)){
+      if (!is.null(collect_fun)) {
         tbl <- collect_fun(tbl)
       }
     }
@@ -95,7 +100,7 @@ cross_by_dimensions <- function(tbl, ..., add = TRUE, max_dimensions = NULL,
 }
 
 cross_by_dimensions_limited <- function(tbl, column_symbols, max_dimensions,
-                                        collect_fun = NULL){
+                                        collect_fun = NULL) {
   columns <- purrr::map_chr(column_symbols, quo_name)
 
   # Get all the combinations of columns with up to n items turned to "All"
@@ -107,8 +112,8 @@ cross_by_dimensions_limited <- function(tbl, column_symbols, max_dimensions,
     purrr::reduce(c)
 
   d <- cols_list %>%
-    purrr::map(~ mutate_at(tbl, vars(.x), ~ "All"))
-  if (!is.null(collect_fun)){
+    purrr::map(~ mutate_at(tbl, vars(.x), ~"All"))
+  if (!is.null(collect_fun)) {
     d <- d %>%
       purrr::map(collect_fun)
   }

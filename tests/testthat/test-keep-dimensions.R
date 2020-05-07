@@ -4,8 +4,10 @@ library(dplyr)
 
 mtcars_by_cyl_gear_am <- mtcars %>%
   cross_by_dimensions(cyl, gear, am) %>%
-  summarize(nb_cars = n(),
-            avg_mpg = mean(mpg))
+  summarize(
+    nb_cars = n(),
+    avg_mpg = mean(mpg)
+  )
 
 test_that("keep_dimensions retains desired dimensions", {
   kept_am <- mtcars_by_cyl_gear_am %>%

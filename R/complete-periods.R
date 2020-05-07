@@ -19,11 +19,11 @@
 #'
 #' # Include number and cumulative number of flights
 #' cumulative_summary <- flights %>%
-#'  cross_by_periods(periods = "day") %>%
-#'  summarize(nb_flights = n()) %>%
-#'  arrange(date) %>%
-#'  mutate(cumulative_flights = cumsum(nb_flights)) %>%
-#'  ungroup()
+#'   cross_by_periods(periods = "day") %>%
+#'   summarize(nb_flights = n()) %>%
+#'   arrange(date) %>%
+#'   mutate(cumulative_flights = cumsum(nb_flights)) %>%
+#'   ungroup()
 #'
 #' # Have periods for week and month as well, representing the end of that period
 #' library(ggplot2)
@@ -31,10 +31,9 @@
 #' cumulative_day_week_month <- cumulative_summary %>%
 #'   complete_periods(periods = c("week", "month"))
 #'
-#'  cumulative_day_week_month %>%
+#' cumulative_day_week_month %>%
 #'   ggplot(aes(date, cumulative_flights, color = period)) +
 #'   geom_point()
-#'
 #' @export
 complete_periods <- function(metric, periods = c("month")) {
   # Check the arguments
@@ -45,8 +44,10 @@ complete_periods <- function(metric, periods = c("month")) {
     stop("Metric must have a day period to be completed")
   }
   if (any(!periods %in% c("week", "month", "quarter", "year"))) {
-    stop("Only periods that can be added by complete_periods_end are ",
-         "week, month, quarter and year")
+    stop(
+      "Only periods that can be added by complete_periods_end are ",
+      "week, month, quarter and year"
+    )
   }
 
   # only add periods that aren't already in there

@@ -5,15 +5,15 @@
 #'   are selected as a default
 #' @param quietly A boolean indicating if diagnostic messages are to be printed.
 #' @importFrom tidyr gather
-gather_metrics <- function(tbl, ..., quietly = FALSE){
+gather_metrics <- function(tbl, ..., quietly = FALSE) {
   tbl_c <- tbl %>%
     ungroup() %>%
     collect()
-  if (rlang::dots_n(...) == 0){
+  if (rlang::dots_n(...) == 0) {
     cols_numeric <- tbl_c %>%
       select_if(is.numeric) %>%
       colnames() %>%
-      grep('\\_id', ., value = TRUE, invert = TRUE)
+      grep("\\_id", ., value = TRUE, invert = TRUE)
     if (!quietly) {
       message("Gathering columns ", paste(cols_numeric, collapse = ", "))
     }
@@ -24,4 +24,3 @@ gather_metrics <- function(tbl, ..., quietly = FALSE){
       tidyr::gather(metric, value, ...)
   }
 }
-

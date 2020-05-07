@@ -28,11 +28,11 @@ flights <- nycflights13::flights \%>\%
 
 # Include number and cumulative number of flights
 cumulative_summary <- flights \%>\%
- cross_by_periods(periods = "day") \%>\%
- summarize(nb_flights = n()) \%>\%
- arrange(date) \%>\%
- mutate(cumulative_flights = cumsum(nb_flights)) \%>\%
- ungroup()
+  cross_by_periods(periods = "day") \%>\%
+  summarize(nb_flights = n()) \%>\%
+  arrange(date) \%>\%
+  mutate(cumulative_flights = cumsum(nb_flights)) \%>\%
+  ungroup()
 
 # Have periods for week and month as well, representing the end of that period
 library(ggplot2)
@@ -40,8 +40,7 @@ library(ggplot2)
 cumulative_day_week_month <- cumulative_summary \%>\%
   complete_periods(periods = c("week", "month"))
 
- cumulative_day_week_month \%>\%
+cumulative_day_week_month \%>\%
   ggplot(aes(date, cumulative_flights, color = period)) +
   geom_point()
-
 }

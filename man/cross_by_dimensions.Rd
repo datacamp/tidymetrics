@@ -51,15 +51,19 @@ flights <- nycflights13::flights \%>\%
 # find flight delays by carrier, origin, and Overall
 flight_summary <- nycflights13::flights \%>\%
   cross_by_dimensions(carrier, origin) \%>\%
-  summarize(nb_flights = n(),
-            avg_arr_delay = mean(arr_delay, na.rm = TRUE))
+  summarize(
+    nb_flights = n(),
+    avg_arr_delay = mean(arr_delay, na.rm = TRUE)
+  )
 
 flight_summary
 
 flight_summary <- nycflights13::flights \%>\%
   cross_by_dimensions(carrier, origin, max_dimensions = 1) \%>\%
-  summarize(nb_flights = n(),
-            avg_arr_delay = mean(arr_delay, na.rm = TRUE))
+  summarize(
+    nb_flights = n(),
+    avg_arr_delay = mean(arr_delay, na.rm = TRUE)
+  )
 
 flight_summary
 
@@ -72,7 +76,6 @@ flight_summary \%>\%
 
 flight_summary \%>\%
   discard_dimensions(carrier)
-
 }
 \seealso{
 \code{\link[=discard_dimensions]{discard_dimensions()}}

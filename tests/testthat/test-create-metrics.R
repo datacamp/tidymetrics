@@ -14,8 +14,10 @@ test_that("Can create metrics based on an Rmd, and operate on them", {
     mutate(date = as.Date(ISOdate(year, month, day))) %>%
     cross_by_dimensions(origin, carrier) %>%
     cross_by_periods() %>%
-    summarize(nb_flights = n(),
-              avg_arr_delay = mean(arr_delay, na.rm = TRUE))
+    summarize(
+      nb_flights = n(),
+      avg_arr_delay = mean(arr_delay, na.rm = TRUE)
+    )
 
   rmd <- system.file("extdata", "metrics_flights_nyc.Rmd", package = "tidymetrics")
   metrics <- create_metrics(flight_summary, rmd_file = rmd)

@@ -38,7 +38,6 @@ mtcars_by_cyl_gear \%>\%
 
 mtcars_by_cyl_gear \%>\%
   keep_dimensions(cyl, keep_attribute_all = TRUE)
-
 }
 \seealso{
 \code{\link[=discard_dimensions]{discard_dimensions()}}

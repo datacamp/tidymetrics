@@ -18,13 +18,14 @@
 #' flight_summary <- flights %>%
 #'   cross_by_dimensions(origin) %>%
 #'   cross_by_periods() %>%
-#'   summarize(nb_flights = n(),
-#'             avg_arr_delay = mean(arr_delay, na.rm = TRUE))
+#'   summarize(
+#'     nb_flights = n(),
+#'     avg_arr_delay = mean(arr_delay, na.rm = TRUE)
+#'   )
 #'
 #' use_metrics_scaffold(flight_summary)
-#'
 #' @export
-use_metrics_scaffold <- function(tbl){
+use_metrics_scaffold <- function(tbl) {
   tbl <- ungroup(tbl)
 
   names_dimensions <- var_names_dimensions(tbl)

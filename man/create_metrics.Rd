@@ -23,5 +23,4 @@ Given a metric tbl and an Rmd file, turn into a named list of metric objects
 \examples{
 
 # TODO
-
 }

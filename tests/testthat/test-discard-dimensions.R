@@ -4,8 +4,10 @@ library(dplyr)
 
 mtcars_by_cyl_gear_am <- mtcars %>%
   cross_by_dimensions(cyl, gear, am) %>%
-  summarize(nb_cars = n(),
-            avg_mpg = mean(mpg))
+  summarize(
+    nb_cars = n(),
+    avg_mpg = mean(mpg)
+  )
 
 test_that("discard_dimensions drops desired dimensions", {
   discarded_am <- mtcars_by_cyl_gear_am %>%
@@ -32,4 +34,3 @@ test_that("discard_dimensions works with select helpers", {
 
   expect_equal(colnames(discard_gear_am), c("cyl", "nb_cars", "avg_mpg"))
 })
-

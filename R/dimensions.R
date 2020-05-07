@@ -36,10 +36,10 @@
 #'
 #' mtcars_by_cyl_gear %>%
 #'   discard_dimensions(-one_of("cyl", "gear"))
-discard_dimensions <- function(tbl, ..., quietly = FALSE){
-  cols <- if (rlang::dots_n(...) == 0){
+discard_dimensions <- function(tbl, ..., quietly = FALSE) {
+  cols <- if (rlang::dots_n(...) == 0) {
     x <- var_names_dimensions(tbl)
-    if (!quietly){
+    if (!quietly) {
       message("Discarding all dimensions: ", paste(x, collapse = ", "))
     }
     vars(x)
@@ -53,7 +53,7 @@ discard_dimensions <- function(tbl, ..., quietly = FALSE){
     dplyr::select(!!!cols) %>%
     colnames()
 
-  if (length(cols_2) > 0){
+  if (length(cols_2) > 0) {
     tbl_1 <- tbl %>%
       dplyr::ungroup() %>%
       dplyr::filter_at(cols, all_vars((. == "All")))
@@ -67,7 +67,7 @@ discard_dimensions <- function(tbl, ..., quietly = FALSE){
     tbl_1 %>%
       dplyr::select_at(vars(-one_of(cols_to_remove)))
   } else {
-    if(!quietly){
+    if (!quietly) {
       message("No dimensions left to discard")
     }
     return(tbl)
@@ -101,8 +101,8 @@ discard_dimensions <- function(tbl, ..., quietly = FALSE){
 #'
 #' mtcars_by_cyl_gear %>%
 #'   remove_attribute_all(-cyl, -gear)
-remove_attribute_all <- function(tbl, ...){
-  cols <- if (rlang::dots_n(...) == 0){
+remove_attribute_all <- function(tbl, ...) {
+  cols <- if (rlang::dots_n(...) == 0) {
     vars(var_names_dimensions(tbl))
   } else {
     vars_not_dimensions <- var_names_not_dimensions(tbl)
@@ -141,22 +141,21 @@ remove_attribute_all <- function(tbl, ...){
 #'
 #' mtcars_by_cyl_gear %>%
 #'   keep_dimensions(cyl, keep_attribute_all = TRUE)
-#'
 #' @seealso [discard_dimensions()]
 #'
 #' @export
 keep_dimensions <- function(tbl, ..., keep_attribute_all = FALSE,
-                            quietly = FALSE){
+                            quietly = FALSE) {
   to_keep <- tbl %>%
     ungroup() %>%
     select(...) %>%
     colnames()
-  if (length(to_keep) == 0){
-    if (!quietly){
+  if (length(to_keep) == 0) {
+    if (!quietly) {
       message("Keeping all dimensions")
     }
-    if (!keep_attribute_all){
-      if (!quietly){
+    if (!keep_attribute_all) {
+      if (!quietly) {
         message("Removing the attribute 'All' from dimensions")
       }
       tbl %>%
@@ -167,11 +166,11 @@ keep_dimensions <- function(tbl, ..., keep_attribute_all = FALSE,
   } else {
     tbl_1 <- tbl %>%
       discard_dimensions(-one_of(to_keep))
-    if (!keep_attribute_all){
-      if (!quietly){
+    if (!keep_attribute_all) {
+      if (!quietly) {
         message("Removing the attribute 'All' from dimensions")
       }
-      tbl_1  %>%
+      tbl_1 %>%
         remove_attribute_all()
     } else {
       tbl_1
@@ -190,7 +189,7 @@ var_names_dimensions <- function(tbl) {
     ungroup() %>%
     select_if(~ is.character(.x) || is.factor(.x)) %>%
     colnames() %>%
-    setdiff(c('date', 'value', 'period', 'metric'))
+    setdiff(c("date", "value", "period", "metric"))
 
   set2 <- stringr::str_subset(colnames(tbl), "_id$")
 
@@ -200,7 +199,7 @@ var_names_dimensions <- function(tbl) {
 #' Get names of columns that are NOT dimensions
 #'
 #' @param tbl A tbl_metric
-var_names_not_dimensions <- function(tbl){
+var_names_not_dimensions <- function(tbl) {
   setdiff(colnames(tbl), var_names_dimensions(tbl))
 }
 
@@ -220,22 +219,23 @@ var_names_not_dimensions <- function(tbl){
 #' library(dplyr)
 #'
 #' flights_nyc_avg_arr_delay %>%
-#'   filter(origin == 'JFK') %>%
+#'   filter(origin == "JFK") %>%
 #'   discard_constant_dimensions()
-discard_constant_dimensions <- function(tbl, quietly = FALSE){
+discard_constant_dimensions <- function(tbl, quietly = FALSE) {
   dims <- var_names_dimensions(tbl)
   dims_to_remove <- tbl[dims] %>%
     purrr::map(n_distinct) %>%
     purrr::keep(~ .x == 1) %>%
     names()
-  if (length(dims_to_remove) >= 1){
-    if (!quietly){
+  if (length(dims_to_remove) >= 1) {
+    if (!quietly) {
       message("Removing dimensions ", paste(dims_to_remove, collapse = " , "))
     }
     d <- tbl %>%
       select(-one_of(!!!dims_to_remove))
-    filters <- attr(d, 'metadata')$dimensions_filters
-    attr(d, 'metadata')$dimensions_filters <- append(filters,
+    filters <- attr(d, "metadata")$dimensions_filters
+    attr(d, "metadata")$dimensions_filters <- append(
+      filters,
       tbl %>%
         as_tibble() %>%
         select(!!!dims_to_remove) %>%
