@@ -157,7 +157,7 @@ as_tbl_metric <- function(x) {
 #'
 #' @name metric-s3
 #' @export
-as_tibble.tbl_metric <- function(x) {
+as_tibble.tbl_metric <- function(x, ...) {
   class(x) <- class(x)[class(x) != "tbl_metric"]
   x
 }
