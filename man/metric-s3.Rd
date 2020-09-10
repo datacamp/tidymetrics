@@ -19,7 +19,7 @@
 \alias{distinct.tbl_metric}
 \title{Metric dplyr S3 methods}
 \usage{
-\method{as_tibble}{tbl_metric}(x)
+\method{as_tibble}{tbl_metric}(x, ...)
 
 \method{filter}{tbl_metric}(.data, ...)
 
@@ -52,9 +52,9 @@
 \arguments{
 \item{x}{For as_data_frame, the}
 
-\item{.data}{A \code{tbl_metric} object}
-
 \item{...}{Arguments passed on to the appropriate dplyr metric}
+
+\item{.data}{A \code{tbl_metric} object}
 }
 \description{
 Metric dplyr S3 methods
