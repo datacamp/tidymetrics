@@ -3,9 +3,9 @@
 **Authors:** Ramnath Vaidyanathan, [David Robinson](http://varianceexplained.org/)<br/>
 
 <!-- badges: start -->
-  [![R build status](https://github.com/ramnathv/tidymetrics/workflows/R-CMD-check/badge.svg)](https://github.com/ramnathv/tidymetrics/actions)
+  [![R build status](https://github.com/datacamp/tidymetrics/workflows/R-CMD-check/badge.svg)](https://github.com/datacamp/tidymetrics/actions)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![Codecov test coverage](https://codecov.io/gh/ramnathv/tidymetrics/branch/master/graph/badge.svg)](https://codecov.io/gh/ramnathv/tidymetrics?branch=master)
+[![Codecov test coverage](https://codecov.io/gh/datacamp/tidymetrics/branch/master/graph/badge.svg)](https://codecov.io/gh/datacamp/tidymetrics?branch=master)
 <!-- badges: end -->
 
 <!--
