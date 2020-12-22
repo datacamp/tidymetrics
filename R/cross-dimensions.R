@@ -112,7 +112,7 @@ cross_by_dimensions_limited <- function(tbl, column_symbols, max_dimensions,
     purrr::reduce(c)
 
   d <- cols_list %>%
-    purrr::map(~ mutate_at(tbl, vars(.x), ~"All"))
+    purrr::map(~ mutate_at(tbl, vars(.x), ~ ifelse(TRUE, 'All', NA)))
   if (!is.null(collect_fun)) {
     d <- d %>%
       purrr::map(collect_fun)
