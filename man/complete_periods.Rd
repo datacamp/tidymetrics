@@ -4,13 +4,15 @@
 \alias{complete_periods}
 \title{Given a cumulative metric, add dates for the end of each period}
 \usage{
-complete_periods(metric, periods = c("month"))
+complete_periods(metric, periods = c("month"), add_incomplete = FALSE)
 }
 \arguments{
 \item{metric}{A metric table in wide format, containing "date" and "period" columns as
 well as one or more dimensions and metric values.}
 
 \item{periods}{Vector of periods to add: one or more of "week", "month", "quarter" or "year".}
+
+\item{add_incomplete}{If TRUE a value of the running incomplete period will be added.}
 }
 \description{
 Some metrics like ARR are measured cumulatively, so in order to create a bar plot

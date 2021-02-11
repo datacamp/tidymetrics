@@ -9,6 +9,7 @@
 #' @param metric A metric table in wide format, containing "date" and "period" columns as
 #' well as one or more dimensions and metric values.
 #' @param periods Vector of periods to add: one or more of "week", "month", "quarter" or "year".
+#' @param add_incomplete If TRUE a value of the running incomplete period will be added.
 #'
 #' @examples
 #'
@@ -35,7 +36,7 @@
 #'   ggplot(aes(date, cumulative_flights, color = period)) +
 #'   geom_point()
 #' @export
-complete_periods <- function(metric, periods = c("month")) {
+complete_periods <- function(metric, periods = c("month"), add_incomplete = FALSE) {
   # Check the arguments
   if (!"period" %in% colnames(metric)) {
     stop("Metric must have a period column (is this a metric data frame)?")
@@ -53,12 +54,15 @@ complete_periods <- function(metric, periods = c("month")) {
   # only add periods that aren't already in there
   periods <- setdiff(periods, unique(metric$period))
 
+  # last date we have values for
+  last_date <- max(metric$date)
+
   new_periods <- metric %>%
     dplyr::filter(period == "day") %>%
     dplyr::select(-period) %>%
     tidyr::crossing(period = periods) %>%
     dplyr::group_by(period) %>%
-    dplyr::filter(date == as.Date(lubridate::ceiling_date(date, period[1])) - 1) %>%
+    dplyr::filter(date == as.Date(lubridate::ceiling_date(date, period[1])) - 1 | (add_incomplete & date == last_date)) %>%
     dplyr::mutate(date = as.Date(lubridate::floor_date(date, period[1], week_start = 1))) %>%
     dplyr::ungroup()
 
