@@ -45,7 +45,7 @@
 
 \method{rename}{tbl_metric_group}(.data, ...)
 
-count.tbl_metric_group(.data, ...)
+\method{count}{tbl_metric_group}(.data, ...)
 
 \method{transmute}{tbl_metric_group}(.data, ...)
 }

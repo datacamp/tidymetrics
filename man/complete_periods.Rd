@@ -4,7 +4,12 @@
 \alias{complete_periods}
 \title{Given a cumulative metric, add dates for the end of each period}
 \usage{
-complete_periods(metric, periods = c("month"), add_incomplete = FALSE)
+complete_periods(
+  metric,
+  periods = c("month"),
+  add_incomplete = FALSE,
+  week_start = getOption("lubridate.week.start", 1)
+)
 }
 \arguments{
 \item{metric}{A metric table in wide format, containing "date" and "period" columns as
@@ -13,6 +18,10 @@ well as one or more dimensions and metric values.}
 \item{periods}{Vector of periods to add: one or more of "week", "month", "quarter" or "year".}
 
 \item{add_incomplete}{If TRUE a value of the running incomplete period will be added.}
+
+\item{week_start}{when unit is \code{weeks}, specifies the reference day. 7
+represents Sunday and 1 represents Monday. Note that we use a default of 1
+instead of 7, in order to be consistent with SQL.}
 }
 \description{
 Some metrics like ARR are measured cumulatively, so in order to create a bar plot

@@ -10,6 +10,9 @@
 #' well as one or more dimensions and metric values.
 #' @param periods Vector of periods to add: one or more of "week", "month", "quarter" or "year".
 #' @param add_incomplete If TRUE a value of the running incomplete period will be added.
+#' @param week_start when unit is \code{weeks}, specifies the reference day. 7
+#'   represents Sunday and 1 represents Monday. Note that we use a default of 1
+#'   instead of 7, in order to be consistent with SQL.
 #'
 #' @examples
 #'
@@ -36,7 +39,10 @@
 #'   ggplot(aes(date, cumulative_flights, color = period)) +
 #'   geom_point()
 #' @export
-complete_periods <- function(metric, periods = c("month"), add_incomplete = FALSE) {
+complete_periods <- function(metric,
+                             periods = c("month"),
+                             add_incomplete = FALSE,
+                             week_start = getOption('lubridate.week.start', 1)) {
   # Check the arguments
   if (!"period" %in% colnames(metric)) {
     stop("Metric must have a period column (is this a metric data frame)?")
@@ -62,8 +68,8 @@ complete_periods <- function(metric, periods = c("month"), add_incomplete = FALS
     dplyr::select(-period) %>%
     tidyr::crossing(period = periods) %>%
     dplyr::group_by(period) %>%
-    dplyr::filter(date == as.Date(lubridate::ceiling_date(date, period[1])) - 1 | (add_incomplete & date == last_date)) %>%
-    dplyr::mutate(date = as.Date(lubridate::floor_date(date, period[1], week_start = 1))) %>%
+    dplyr::filter(date == as.Date(lubridate::ceiling_date(date, period[1], week_start = week_start)) - 1 | (add_incomplete & date == last_date)) %>%
+    dplyr::mutate(date = as.Date(lubridate::floor_date(date, period[1], week_start = week_start))) %>%
     dplyr::ungroup()
 
   bind_rows(metric, new_periods)
