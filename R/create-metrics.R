@@ -1,18 +1,46 @@
 #' Given a metric tbl and an Rmd file, turn into a named list of metric objects
 #'
-#' @param ... One or more metric tables in wide metric format: one column for each metric.
+#' @param ... One or more metric tables in wide metric format: one column for
+#'   each metric.
 #' @param rmd_file The Rmd file that generated the compact metrics, which has
-#' documentation for the metrics and dimensions stored in the YAML front matter.
-#' If no Rmd file is given, it uses the currently running one.
-#'
-#' @return A named list of metric objects. Each of these has both the data and the metadata
-#' (documentation, dimensions, owner, etc) to make an interactive visualization.
+#'   documentation for the metrics and dimensions stored in the YAML front
+#'   matter. If no Rmd file is given, it uses the currently running one.
+#' @param category A string indicating a category for the metric. It overrides
+#'   the values in the `rmd_file` and the default values.
+#' @param subcategory A string indicating a subcategory for the metric. It
+#'   overrides the values in the `rmd_file` and the default values.
+#' @param metrics A named list of metrics. Each item in the list should have a
+#'   title and a description. It overrides the values in the `rmd_file` and the
+#'   defaults values.
+#' @param dimensions A named list of dimensions. Each item in the list should
+#'   have a title and a description. It overrides the values in the `rmd_file`
+#'   and the defaults values.
+#' @param owner A string indicating an owner for the metric.  It overrides the
+#'   values in the `rmd_file` and the default values.
+#' @return A named list of metric objects. Each of these has both the data and
+#'   the metadata (documentation, dimensions, owner, etc) to make an interactive
+#'   visualization.
 #'
 #' @examples
 #'
 #' # TODO
 #' @export
-create_metrics <- function(..., rmd_file = NULL) {
+create_metrics <- function(...,
+                           rmd_file = NULL,
+                           category = NULL,
+                           subcategory = NULL,
+                           metrics = NULL,
+                           dimensions = NULL,
+                           owner = NULL) {
+  # Get documentation
+  metric_docs <- get_metric_docs(
+    rmd_file,
+    category = category,
+    subcategory = subcategory, metrics = metrics,
+    dimensions = dimensions, owner = owner,
+    ...
+  )
+
   metrics <- list(...)
 
   if (length(metrics) == 0) {
@@ -30,10 +58,9 @@ create_metrics <- function(..., rmd_file = NULL) {
 
     return(all_metrics)
   }
+
   # Now there's just one metric dataset, so construct it
   data <- metrics[[1]]
-
-  metric_docs <- get_metric_docs(rmd_file)
 
   # an Rmd always has same category/subcategory
   category <- metric_docs[[1]]$category
@@ -42,8 +69,11 @@ create_metrics <- function(..., rmd_file = NULL) {
   data_nested <- data %>%
     gather_metrics() %>%
     filter(!is.na(value)) %>%
-    tidyr::nest_legacy(-metric) %>%
-    dplyr::mutate(metric_full = paste(category, subcategory, metric, sep = "_"))
+    tidyr::nest(data = -metric) %>%
+    dplyr::mutate(metric_full = purrr::map_chr(metric, ~ {
+      y <- c(category, subcategory, .x)
+      paste(y[y != ""], collapse = "_")
+    }))
 
   missing_metrics <- setdiff(data_nested$metric_full, names(metric_docs))
   if (length(missing_metrics) > 0) {
@@ -80,56 +110,59 @@ create_metrics <- function(..., rmd_file = NULL) {
   purrr::map(ret, prune_dimensions)
 }
 
-get_metric_docs <- function(rmd_file = NULL) {
+# Get metadata from an Rmd document
+get_rmd_metadata <- function(rmd_file = NULL) {
   if (!is.null(rmd_file)) {
-    metric_docs <- parse_metrics_header(rmarkdown::yaml_front_matter(rmd_file))
+    rmarkdown::yaml_front_matter(rmd_file)
   } else if (length(rmarkdown::metadata) > 0) {
-    metric_docs <- parse_metrics_header(rmarkdown::metadata)
-  } else {
-    # If running in RStudio, get the current document
+    rmarkdown::metadata
+  } else if (interactive()){
     rmd_file <- rstudioapi::getActiveDocumentContext()$path
-
-    if (!stringr::str_detect(rmd_file, "\\.Rmd$")) {
-      stop(
-        "create_metrics must either be given the path to an Rmd file, run in a rendered Rmd, ",
-        "or be run in RStudio as part of the Rmd (that is, by pressing CMD-RETURN with your ",
-        "cursor in the Rmd, not e.g. copy-pasted into the R terminal)."
-      )
-    }
-
-    metric_docs <- parse_metrics_header(rmarkdown::yaml_front_matter(rmd_file))
+    rmarkdown::yaml_front_matter(rmd_file)
+  } else {
+    list()
   }
-  return(metric_docs)
 }
 
+# Get metric documentation
+get_metric_docs <- function(rmd_file = NULL,
+                            category = NULL,
+                            subcategory = NULL,
+                            owner = NULL,
+                            metrics = NULL,
+                            dimensions = NULL,
+                            ...) {
+  y <- get_rmd_metadata(rmd_file)
+  `%||%` <- function(x, y) {
+    if (is.null(x)) y else x
+  }
 
-## Internal utility functions for create_metrics
-
-parse_metrics_header <- function(y) {
-  name_components <- stringr::str_split(y$name, "_")[[1]]
-
-  shared <- c(
-    list(
-      category = name_components[2],
-      subcategory = name_components[3]
-    ),
-    y[c("owner", "dimensions")]
+  name_components <- if (!is.null(y$name)) {
+    stringr::str_split(y$name, "_")[[1]]
+  } else {
+    c()
+  }
+  shared <- list(
+    category = category %||% y$category %||% name_components[2] %||% "",
+    subcategory = subcategory %||% y$subcategory %||% name_components[3] %||% "",
+    owner = owner %||% y$owner %||% "",
+    dimensions = dimensions %||% y$dimensions %||% doc_dimensions(...)
   )
+  metrics <- metrics %||% y$metrics %||% doc_metrics(...)
 
-  ret <- purrr::map(names(y$metrics), ~ c(
-    list(
-      metric = .,
-      metric_full = paste(name_components[2],
-        name_components[3],
-        .,
-        sep = "_"
+  docs <- names(metrics) %>%
+    purrr::map(~ {
+      y <- c(shared$category, shared$subcategory, .x)
+      c(
+        metrics[[.x]],
+        shared,
+        list(
+          metric = .x,
+          metric_full = paste(y[y != ""], collapse = "_")
+        )
       )
-    ),
-    y$metrics[[.]],
-    shared
-  ))
-  names(ret) <- purrr::map(ret, "metric_full")
-  ret
+    })
+  rlang::set_names(docs, purrr::map(docs, "metric_full"))
 }
 
 combine_metric <- function(data, metadata) {
@@ -144,10 +177,14 @@ combine_metric <- function(data, metadata) {
 
     if (!is.null(levs) && dimension_name %in% colnames(data)) {
       if (any(duplicated(levs))) {
-        stop(glue::glue("Duplicated levels in { dimension_name } in { metadata$metric }"))
+        stop(glue::glue(
+          "Duplicated levels in { dimension_name } in { metadata$metric }"
+        ))
       }
 
-      data[[dimension_name]] <- forcats::fct_relevel(data[[dimension_name]], c("All", levs))
+      data[[dimension_name]] <- forcats::fct_relevel(
+        data[[dimension_name]], c("All", levs)
+      )
     }
   }
 

@@ -128,10 +128,16 @@ cross_by_periods.tbl_df <- function(tbl,
     intervals = intervals
   )
 
-  tbl %>%
+  tbl <- tbl %>%
     rename(date_original = date) %>%
-    inner_join(date_periods, by = "date_original") %>%
-    group_by(period, date, add = TRUE)
+    inner_join(date_periods, by = "date_original")
+
+  if (has_add()){
+    group_by(tbl, period, date, add = TRUE)
+  } else {
+    group_by(tbl, period, date, .add = TRUE)
+  }
+
 }
 
 check_cross_by_tbl <- function(tbl) {

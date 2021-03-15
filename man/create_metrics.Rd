@@ -4,18 +4,45 @@
 \alias{create_metrics}
 \title{Given a metric tbl and an Rmd file, turn into a named list of metric objects}
 \usage{
-create_metrics(..., rmd_file = NULL)
+create_metrics(
+  ...,
+  rmd_file = NULL,
+  category = NULL,
+  subcategory = NULL,
+  metrics = NULL,
+  dimensions = NULL,
+  owner = NULL
+)
 }
 \arguments{
-\item{...}{One or more metric tables in wide metric format: one column for each metric.}
+\item{...}{One or more metric tables in wide metric format: one column for
+each metric.}
 
 \item{rmd_file}{The Rmd file that generated the compact metrics, which has
-documentation for the metrics and dimensions stored in the YAML front matter.
-If no Rmd file is given, it uses the currently running one.}
+documentation for the metrics and dimensions stored in the YAML front
+matter. If no Rmd file is given, it uses the currently running one.}
+
+\item{category}{A string indicating a category for the metric. It overrides
+the values in the \code{rmd_file} and the default values.}
+
+\item{subcategory}{A string indicating a subcategory for the metric. It
+overrides the values in the \code{rmd_file} and the default values.}
+
+\item{metrics}{A named list of metrics. Each item in the list should have a
+title and a description. It overrides the values in the \code{rmd_file} and the
+defaults values.}
+
+\item{dimensions}{A named list of dimensions. Each item in the list should
+have a title and a description. It overrides the values in the \code{rmd_file}
+and the defaults values.}
+
+\item{owner}{A string indicating an owner for the metric.  It overrides the
+values in the \code{rmd_file} and the default values.}
 }
 \value{
-A named list of metric objects. Each of these has both the data and the metadata
-(documentation, dimensions, owner, etc) to make an interactive visualization.
+A named list of metric objects. Each of these has both the data and
+the metadata (documentation, dimensions, owner, etc) to make an interactive
+visualization.
 }
 \description{
 Given a metric tbl and an Rmd file, turn into a named list of metric objects
